@@ -5,17 +5,17 @@ import { useRef } from 'react';
 import * as THREE from 'three';
 import { useCameraMovement } from '../provider/camera';
 import { Planet } from './planet/planet';
+import { Sun } from './planet/sun';
 import { StarBackground } from './star-background';
-
 import { Vector3 } from 'three';
-
 import useSound from 'use-sound';
 import click from '../../sounds/click-1.mp3';
 import fly from '../../sounds/fly-1.mp3';
 import { MAX_DOLLY_DISTANCE, MIN_DOLLY_DISTANCE, PLANET_SCALES } from './planet/constants';
 import { PlanetAndOrbit } from './planet/planet-with-orbit/planet-and-orbit';
-
 import { onLoadable } from '@/helpers/hooks/api/query'; // Import onLoadable
+import { EffectComposer, Bloom, GodRays } from '@react-three/postprocessing'; // Import Bloom effect
+import { BlurPass, Resizer, KernelSize, Resolution } from 'postprocessing';
 
 export interface SpaceProps {
   showStartScreen: boolean;
@@ -38,6 +38,8 @@ export function Space(props: SpaceProps) {
   const [playClick] = useSound(click, { interrupt: true });
   const [playFly] = useSound(fly, { interrupt: true });
 
+  const sunRef = useRef();
+
   const handlePlanetClick = (planetName: string, position: Vector3, scale?: number) => {
     if (position) {
       playClick();
@@ -48,6 +50,7 @@ export function Space(props: SpaceProps) {
       console.warn(`Unknown planet: ${planetName}`);
     }
   };
+
   return onLoadable(horizonDataLoadable)(
     () => null,
     () => null,
@@ -67,24 +70,25 @@ export function Space(props: SpaceProps) {
           <CameraControls minDistance={MIN_DOLLY_DISTANCE} maxDistance={MAX_DOLLY_DISTANCE} ref={cameraControlRef} />
 
           {/* Sun */}
-          <Planet
+          <Sun
             model={sun}
             position={new Vector3(0, 0, 0)}
             scale={1} // Sun's base scale
             name='Sun'
             onClick={(pos) => handlePlanetClick('Sun', pos, PLANET_SCALES.SUN)}
           />
-
           <pointLight position={[0, 0, 0]} intensity={5} distance={0} decay={0} castShadow={true} />
 
           {/* Mercury */}
-          <PlanetAndOrbit
-            modelUrl='/planets/mercury/scene.glb'
-            scale={0.0035} // Mercury scale: 0.0035x
-            name='Mercury'
-            horizonData={horizonData.data['Mercury']}
-            onClick={(pos) => handlePlanetClick('Mercury', pos, PLANET_SCALES.MERCURY)}
-          />
+          <group>
+            <PlanetAndOrbit
+              modelUrl='/planets/mercury/scene.glb'
+              scale={0.0035} // Mercury scale: 0.0035x
+              name='Mercury'
+              horizonData={horizonData.data['Mercury']}
+              onClick={(pos) => handlePlanetClick('Mercury', pos, PLANET_SCALES.MERCURY)}
+            />
+          </group>
 
           {/* Venus */}
           <PlanetAndOrbit
@@ -102,6 +106,16 @@ export function Space(props: SpaceProps) {
             name='Earth'
             horizonData={horizonData.data['Earth']}
             onClick={(pos) => handlePlanetClick('Earth', pos, PLANET_SCALES.EARTH)}
+          />
+
+          <PlanetAndOrbit
+            modelUrl='/planets/earth/moon/scene.glb'
+            scale={0.0025} // Moon scale: 0.0025x
+            name='Moon'
+            type='moon'
+            horizonData={horizonData.data['Moon']}
+            onClick={(pos) => handlePlanetClick('Moon', pos, PLANET_SCALES.MOON)}
+            orbitingPlanetHorizonData={horizonData.data['Earth']}
           />
 
           {/* Mars */}
@@ -149,6 +163,14 @@ export function Space(props: SpaceProps) {
             onClick={(pos) => handlePlanetClick('Neptune', pos, PLANET_SCALES.NEPTUNE)}
           />
         </group>
+        {/* <EffectComposer>
+          <Bloom
+            intensity={2.0} // The bloom intensity.
+            luminanceThreshold={0} // luminance threshold. Raise this value to mask out darker elements in the scene.
+            luminanceSmoothing={1} // smoothness of the luminance threshold. Range is [0, 1]
+            kernelSize={KernelSize.HUGE}
+          />
+        </EffectComposer> */}
       </group>
     ),
   );

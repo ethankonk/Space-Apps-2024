@@ -15,12 +15,14 @@ export const PLANET_SCALES = {
    SATURN: 0.0837,
    URANUS: 0.0365,
    NEPTUNE: 0.0354,
+   MOON:0.0025,
  };
 
  export const PLANET_OFFSETS = {
   Mercury: 0.0796,
   Venus: 0.0049,
   Earth: 0.0167,
+  Moon: 0.000141,
   Mars: 0.1423,
   Jupiter: 0.2543,
   Saturn: 0.5386,

@@ -23,6 +23,14 @@ export const planetOrbitalData = {
     longitudeOfAscendingNode: -11.26064 * (Math.PI / 180), // Converted from degrees to radians
     argumentOfPeriapsis: 114.20783 * (Math.PI / 180), // Converted from degrees to radians
   },
+  Moon: {
+    semiMajorAxis: 0.00256955529, // AU (384,400 km)
+    semiMinorAxis: 0.0025656799, // Calculated from semi-major and eccentricity
+    eccentricity: 0.0549, // Actual value
+    inclination: 5.145 * (Math.PI / 180), // Converted from degrees to radians
+    longitudeOfAscendingNode: 125.08 * (Math.PI / 180), // Converted from degrees to radians
+    argumentOfPeriapsis: 318.15 * (Math.PI / 180), // Converted from degrees to radians
+  },
   Mars: {
     semiMajorAxis: 1.52371034,   // AU
     semiMinorAxis: 1.51752573,   // Calculated value
