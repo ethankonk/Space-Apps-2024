@@ -9,6 +9,8 @@ export interface PlanetDataEntry {
   vz?: number; 
 }
 
+export interface PlanetDataEntryArray extends Array<PlanetDataEntry> {}
+
 
 export interface HorizonsResponse {
   data: {

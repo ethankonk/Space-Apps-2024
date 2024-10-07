@@ -1,4 +1,4 @@
-import { PlanetDataEntry } from '@/helpers/hooks/api/nasa/types';
+import { PlanetDataEntry, PlanetDataEntryArray } from '@/helpers/hooks/api/nasa/types';
 import { useGLTF } from '@react-three/drei';
 import { useEffect, useState } from 'react';
 import * as THREE from 'three';
@@ -12,22 +12,27 @@ import { getPlanetPosition } from './utils';
 interface PlanetAndOrbitProps {
   modelUrl: string;
   name: keyof typeof planetOrbitalData;
+  type?: string;
   horizonData: PlanetDataEntry[];
   orbitPosition?: THREE.Vector3;
   orbitRotation?: THREE.Euler;
   modelPosition?: Vector3;
   scale?: number;
+  orbitingPlanetHorizonData?: PlanetDataEntry[];
+  // orbitersHorizonData?: any;
   onClick?: (position: Vector3, scale?: number) => void;
 }
 
 export function PlanetAndOrbit({
   modelUrl,
   name,
+  type = 'planet',
   horizonData,
-  orbitPosition = new THREE.Vector3(0, 0, 0),
+  orbitPosition,
   orbitRotation = new THREE.Euler(0, 0, 0),
   modelPosition,
   scale = 1,
+  orbitingPlanetHorizonData = [{ time: '', datetime: '', x: 0, y: 0, z: 0 }],
   onClick,
 }: PlanetAndOrbitProps) {
   const planetModel = useGLTF(modelUrl);
@@ -37,6 +42,11 @@ export function PlanetAndOrbit({
   const [inclination, setInclination] = useState(0);
   const [longitudeOfAscendingNode, setLongitudeOfAscendingNode] = useState(0);
   const [argumentOfPeriapsis, setArgumentOfPeriapsis] = useState(0);
+
+  console.log(`${name}'s orbitingPlanetHorizonData`, orbitingPlanetHorizonData[0]);
+  // console.log(`${name}'s horizonData: `, horizonData);
+
+  // console.log(`${name}'s stuff: `, sMajor, sMinor, inclination, longitudeOfAscendingNode, argumentOfPeriapsis);
 
   useEffect(() => {
     const planetData = planetOrbitalData[name];
@@ -72,6 +82,7 @@ export function PlanetAndOrbit({
     <group>
       <Planet
         model={planetModel}
+        type={type}
         position={new Vector3(planetPos[0], planetPos[1], planetPos[2])}
         name={name}
         modelPosition={modelPosition}
@@ -79,6 +90,7 @@ export function PlanetAndOrbit({
         onClick={onClick}
         color={planetColors[name]}
         hoverColor={hoverColor[name]}
+        orbitingPlanetHorizonData={orbitingPlanetHorizonData}
       />
       <PlanetOrbit
         name={name}
@@ -87,7 +99,11 @@ export function PlanetAndOrbit({
         inclination={inclination}
         longitudeOfAscendingNode={longitudeOfAscendingNode}
         argumentOfPeriapsis={argumentOfPeriapsis}
-        position={orbitPosition}
+        position={[
+          orbitingPlanetHorizonData[0].x * ORBIT_MULTIPLIER,
+          orbitingPlanetHorizonData[0].y * ORBIT_MULTIPLIER,
+          orbitingPlanetHorizonData[0].z * ORBIT_MULTIPLIER,
+        ]}
         rotation={new THREE.Euler(0, 0, 0)}
         color={planetColors[name]}
         hoverColor={hoverColor[name]}
