@@ -55,7 +55,7 @@ export function PlanetAndOrbit({
       const scaledPosition = new THREE.Vector3(
         latestPosition[0] * ORBIT_MULTIPLIER,
         latestPosition[1] * ORBIT_MULTIPLIER,
-        latestPosition[2],
+        latestPosition[2] * ORBIT_MULTIPLIER,
       );
       setPlanetPos([scaledPosition.x, scaledPosition.y, scaledPosition.z]);
     } else {
