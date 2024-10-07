@@ -8,25 +8,20 @@ import { GLTF } from 'three-stdlib';
 import useSound from 'use-sound';
 import hover from '../../../sounds/hover-1.mp3';
 import { MAX_VISIBLE_DISTANCE, MIN_VISIBLE_DISTANCE } from './constants';
-import { PlanetDataEntry, PlanetDataEntryArray } from '@/helpers/hooks/api/nasa/types';
-import { PlanetAndOrbit } from './planet-with-orbit/planet-and-orbit';
 
-interface PlanetProps {
+interface SunProps {
   model?: GLTF & ObjectMap;
-  type?: string;
   position?: Vector3;
   name?: string;
   modelPosition?: Vector3;
   scale?: number;
   color?: string;
   hoverColor?: string;
-  orbitingPlanetHorizonData?: PlanetDataEntry[];
   onClick?: (position: Vector3, scale?: number) => void;
 }
 
-export function Planet(props: PlanetProps) {
-  const { name, type, model, position, modelPosition, scale, color, hoverColor, orbitingPlanetHorizonData, onClick } =
-    props;
+export function Sun(props: SunProps) {
+  const { name, model, position, modelPosition, scale, color, hoverColor, onClick } = props;
   const starSize = 0.015;
 
   const groupRef = useRef<THREE.Group>();
@@ -64,11 +59,11 @@ export function Planet(props: PlanetProps) {
       : MathUtils.lerp(groupRef.current.scale.z, 1, hoverEffectSpeed);
 
     const distance = state.camera.position.distanceTo(textRef.current.position);
-    textRef.current.scale.setScalar(distance * (type === 'planet' ? 0.03 : 0.0005));
-    circleRef.current.scale.setScalar(distance * (type === 'planet' ? 0.01 : 0.0002));
-    pooRef.current.scale.setScalar(distance * (type === 'planet' ? 0.01 : 0.0002));
+    textRef.current.scale.setScalar(distance * 0.03);
+    circleRef.current.scale.setScalar(distance * 0.01);
+    pooRef.current.scale.setScalar(distance * 0.01);
 
-    const adjustedMaxDistance = MAX_VISIBLE_DISTANCE * (planetFromOrigin / 50) * (type === 'planet' ? 1 : 0.05);
+    const adjustedMaxDistance = MAX_VISIBLE_DISTANCE * (planetFromOrigin / 50);
     const adjustedMinDistance = MIN_VISIBLE_DISTANCE * scale;
     const isRingVisible = distance <= adjustedMaxDistance && distance >= adjustedMinDistance;
     const isTextVisible = distance <= adjustedMaxDistance && distance >= adjustedMinDistance;
@@ -94,7 +89,6 @@ export function Planet(props: PlanetProps) {
     onClick(groupRef.current.position, scale);
   };
 
-  console.log(`${name}'s position: `, position);
   return (
     <group
       ref={groupRef}
@@ -110,6 +104,7 @@ export function Planet(props: PlanetProps) {
         scale={[0.1 * scale, 0.1 * scale, 0.1 * scale]}
         position={modelPosition}
       />
+
       <Billboard>
         <Text
           ref={textRef}

@@ -18,6 +18,7 @@ interface PlanetOrbitProps {
   inclination?: number;
   longitudeOfAscendingNode?: number;
   argumentOfPeriapsis?: number;
+  orbitPosition?: Vector3;
   onClick?: VoidFunction;
 }
 
@@ -34,8 +35,11 @@ export function PlanetOrbit(props: PlanetOrbitProps) {
     longitudeOfAscendingNode,
     argumentOfPeriapsis,
     inclination,
+    orbitPosition,
     onClick,
   } = props;
+
+  console.log(`${name}'s orbit position: `, orbitPosition);
 
   // Get the offset for the planet and multiply by ORBIT_MULTIPLIER
   const offset = PLANET_OFFSETS[name] * ORBIT_MULTIPLIER * -1;
