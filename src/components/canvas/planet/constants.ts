@@ -1,7 +1,7 @@
 import { scale } from "maath/dist/declarations/src/vector2";
 
 export const ORBIT_MULTIPLIER = 100000;
-export const MAX_VISIBLE_DISTANCE = 200000; // CHANGE THIS LATER
+export const MAX_VISIBLE_DISTANCE = 20000; // CHANGE THIS LATER
 export const MIN_VISIBLE_DISTANCE = 2400000; // CHANGE THIS LATER
 export const MIN_DOLLY_DISTANCE = 0;
 export const MAX_DOLLY_DISTANCE = 7500000;
