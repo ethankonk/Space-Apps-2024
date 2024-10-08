@@ -29,7 +29,7 @@ export function getNearestPointOnOrbit(
     0, // rotation angle
   );
 
-  const points = ellipseCurve.getPoints(1000);
+  const points = ellipseCurve.getPoints(10000);
   const ellipsePoints = points.map((point) => new THREE.Vector3(point.x, point.y, 0));
 
   // Apply 3D rotations

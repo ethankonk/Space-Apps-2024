@@ -8,6 +8,7 @@ import hover from '../../../sounds/hover-1.mp3';
 interface PlanetOrbitProps {
   name?: string;
   rotation?: Euler;
+  position?: Vector3;
   color?: string;
   hoverColor?: string;
   lineWidth?: number;
@@ -19,6 +20,7 @@ export function PlanetOrbit(props: PlanetOrbitProps) {
   const {
     name,
     rotation = [0, 0, 0],
+    position,
     color = 'white',
     hoverColor = '',
     lineWidth,
