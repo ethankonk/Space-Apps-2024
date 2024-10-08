@@ -1,10 +1,10 @@
 import { scale } from "maath/dist/declarations/src/vector2";
 
-export const ORBIT_MULTIPLIER = 17000;
+export const ORBIT_MULTIPLIER = 100000;
 export const MAX_VISIBLE_DISTANCE = 20000; // CHANGE THIS LATER
-export const MIN_VISIBLE_DISTANCE = 240000; // CHANGE THIS LATER
+export const MIN_VISIBLE_DISTANCE = 2400000; // CHANGE THIS LATER
 export const MIN_DOLLY_DISTANCE = 0;
-export const MAX_DOLLY_DISTANCE = 1500000;
+export const MAX_DOLLY_DISTANCE = 7500000;
 export const MIN_RADIUS = 10;
 
 // x offset= e × semi-major axis
@@ -72,8 +72,8 @@ export const PLANET_DATA = {
     hoverColor: '#733a13'
   },
   Phobos: {
-    semiMajorAxis: 0.000627, // AU (9,378 km)
-    semiMinorAxis: 0.000627, // Calculated from semi-major and eccentricity
+    semiMajorAxis: 0.0000627, // AU (9,378 km)
+    semiMinorAxis: 0.0000627, // Calculated from semi-major and eccentricity
     eccentricity: 0.0151, // Actual value
     inclination: 1.093 * (Math.PI / 180), // Converted from degrees to radians
     longitudeOfAscendingNode: 49.57854 * (Math.PI / 180), // Converted from degrees to radians
@@ -84,8 +84,8 @@ export const PLANET_DATA = {
     hoverColor: '#666666'
   },
   Deimos: {
-    semiMajorAxis: 0.00156, // AU (23,460 km)
-    semiMinorAxis: 0.00156, // Calculated from semi-major and eccentricity
+    semiMajorAxis: 0.000156, // AU (23,460 km)
+    semiMinorAxis: 0.000156, // Calculated from semi-major and eccentricity
     eccentricity: 0.0002, // Actual value
     inclination: 1.788 * (Math.PI / 180), // Converted from degrees to radians
     longitudeOfAscendingNode: 49.57854 * (Math.PI / 180), // Converted from degrees to radians

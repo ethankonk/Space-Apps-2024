@@ -28,7 +28,7 @@ export function CameraMovementContextProvider(props: { children: React.ReactNode
   const handleResetCamera = () => {
     cameraControlRef.current.moveTo(0, 0, 0);
     cameraControlRef.current.rotateTo(Math.atan(0.17776231976659118 / 0.7818591576087148), 2.2); // azimuthAngle, polarAngle
-    cameraControlRef.current.dollyTo(25000, true);
+    cameraControlRef.current.dollyTo(200000, true);
   };
 
   const memoizedContext = useMemo(

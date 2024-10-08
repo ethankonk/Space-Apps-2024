@@ -50,6 +50,7 @@ export function SatelliteAndOrbit({
   const [orbitingBodyInclination, setOrbitingBodyInclination] = useState(0);
   const [orbitingBodyLongitudeOfAscendingNode, setOrbitingBodyLongitudeOfAscendingNode] = useState(0);
   const [orbitingBodyArgumentOfPeriapsis, setOrbitingBodyArgumentOfPeriapsis] = useState(0);
+  const [orbitingBodyNearestPoint, setOrbitingBodyNearestPoint] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
   const orbitingBodyOffset = PLANET_DATA[orbitingBodyName].offset * ORBIT_MULTIPLIER * -1;
 
   useEffect(() => {
@@ -98,6 +99,7 @@ export function SatelliteAndOrbit({
         orbitingBodyArgumentOfPeriapsis,
         orbitingBodyOffset,
       );
+      setOrbitingBodyNearestPoint(orbitingBodyNearestPoint);
 
       const [nearestPoint, rotatedEllipsePoints] = getNearestPointOnOrbit(
         scaledPosition,
@@ -139,6 +141,7 @@ export function SatelliteAndOrbit({
         <PlanetOrbit
           name={name}
           rotation={new THREE.Euler(0, 0, 0)}
+          position={orbitingBodyNearestPoint}
           color={PLANET_DATA[name].color}
           hoverColor={PLANET_DATA[name].hoverColor}
           rotatedEllipsePointsTest={rotatedEllipsePoints}
