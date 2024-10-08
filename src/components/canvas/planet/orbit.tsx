@@ -53,7 +53,7 @@ export function PlanetOrbit(props: PlanetOrbitProps) {
     0, // rotation angle
   );
 
-  const points = ellipseCurve.getPoints(500);
+  const points = ellipseCurve.getPoints(1000);
   const ellipsePoints = points.map((point) => new THREE.Vector3(point.x, point.y, 0));
 
   const apply3DRotations = (
