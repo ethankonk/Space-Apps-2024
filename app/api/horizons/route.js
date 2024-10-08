@@ -12,6 +12,8 @@ export async function GET(req) {
     Uranus: '799',
     Neptune: '899',
     Moon: '301',
+    Deimos: '401',
+    Phobos: '402',
   };
 
   const today = new Date();

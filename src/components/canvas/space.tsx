@@ -11,11 +11,12 @@ import { Vector3 } from 'three';
 import useSound from 'use-sound';
 import click from '../../sounds/click-1.mp3';
 import fly from '../../sounds/fly-1.mp3';
-import { MAX_DOLLY_DISTANCE, MIN_DOLLY_DISTANCE, PLANET_SCALES } from './planet/constants';
+import { MAX_DOLLY_DISTANCE, MIN_DOLLY_DISTANCE, PLANET_DATA } from './planet/constants';
 import { PlanetAndOrbit } from './planet/planet-with-orbit/planet-and-orbit';
 import { onLoadable } from '@/helpers/hooks/api/query'; // Import onLoadable
 import { EffectComposer, Bloom, GodRays } from '@react-three/postprocessing'; // Import Bloom effect
 import { BlurPass, Resizer, KernelSize, Resolution } from 'postprocessing';
+import { SatelliteAndOrbit } from './planet/planet-with-orbit/satellite-and-orbit';
 
 export interface SpaceProps {
   showStartScreen: boolean;
@@ -75,7 +76,7 @@ export function Space(props: SpaceProps) {
             position={new Vector3(0, 0, 0)}
             scale={1} // Sun's base scale
             name='Sun'
-            onClick={(pos) => handlePlanetClick('Sun', pos, PLANET_SCALES.SUN)}
+            onClick={(pos) => handlePlanetClick('Sun', pos, 1)}
           />
           <pointLight position={[0, 0, 0]} intensity={5} distance={0} decay={0} castShadow={true} />
 
@@ -83,84 +84,104 @@ export function Space(props: SpaceProps) {
           <group>
             <PlanetAndOrbit
               modelUrl='/planets/mercury/scene.glb'
-              scale={0.0035} // Mercury scale: 0.0035x
+              scale={PLANET_DATA['Mercury'].scale} // Mercury scale: 0.0035x
               name='Mercury'
               horizonData={horizonData.data['Mercury']}
-              onClick={(pos) => handlePlanetClick('Mercury', pos, PLANET_SCALES.MERCURY)}
+              onClick={(pos) => handlePlanetClick('Mercury', pos, PLANET_DATA['Mercury'].scale)}
             />
           </group>
 
           {/* Venus */}
           <PlanetAndOrbit
             modelUrl='/planets/venus/scene.glb'
-            scale={0.0087} // Venus scale: 0.0087x
+            scale={PLANET_DATA['Venus'].scale} // Venus scale: 0.0087x
             name='Venus'
             horizonData={horizonData.data['Venus']}
-            onClick={(pos) => handlePlanetClick('Venus', pos, PLANET_SCALES.VENUS)}
+            onClick={(pos) => handlePlanetClick('Venus', pos, PLANET_DATA['Venus'].scale)}
           />
 
           {/* Earth */}
           <PlanetAndOrbit
             modelUrl='/planets/earth/scene.glb'
-            scale={0.0092} // Earth scale: 0.0092x
+            scale={PLANET_DATA['Earth'].scale} // Earth scale: 0.0092x
             name='Earth'
             horizonData={horizonData.data['Earth']}
-            onClick={(pos) => handlePlanetClick('Earth', pos, PLANET_SCALES.EARTH)}
+            onClick={(pos) => handlePlanetClick('Earth', pos, PLANET_DATA['Earth'].scale)}
           />
 
-          <PlanetAndOrbit
+          <SatelliteAndOrbit
             modelUrl='/planets/earth/moon/scene.glb'
-            scale={0.0025} // Moon scale: 0.0025x
+            scale={PLANET_DATA['Moon'].scale} // Moon scale: 0.0025x
             name='Moon'
-            type='moon'
+            orbitingBodyName='Earth'
             horizonData={horizonData.data['Moon']}
-            onClick={(pos) => handlePlanetClick('Moon', pos, PLANET_SCALES.MOON)}
+            onClick={(pos) => handlePlanetClick('Moon', pos, PLANET_DATA['Moon'].scale)}
             orbitingPlanetHorizonData={horizonData.data['Earth']}
           />
 
           {/* Mars */}
           <PlanetAndOrbit
             modelUrl='/planets/mars/scene.glb'
-            scale={0.0049} // Mars scale: 0.0049x
+            scale={PLANET_DATA['Mars'].scale} // Mars scale: 0.0049x
             name='Mars'
             horizonData={horizonData.data['Mars']}
-            onClick={(pos) => handlePlanetClick('Mars', pos, PLANET_SCALES.MARS)}
+            onClick={(pos) => handlePlanetClick('Mars', pos, PLANET_DATA['Mars'].scale)}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/mars/phobos/scene.glb'
+            scale={PLANET_DATA['Phobos'].scale} // Moon scale: 0.0025x
+            name='Phobos'
+            orbitingBodyName='Mars'
+            horizonData={horizonData.data['Phobos']}
+            onClick={(pos) => handlePlanetClick('Phobos', pos, PLANET_DATA['Phobos'].scale)}
+            orbitingPlanetHorizonData={horizonData.data['Mars']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/mars/deimos/scene.glb'
+            scale={PLANET_DATA['Deimos'].scale} // Moon scale: 0.0025x
+            name='Deimos'
+            orbitingBodyName='Mars'
+            horizonData={horizonData.data['Deimos']}
+            onClick={(pos) => handlePlanetClick('Deimos', pos, PLANET_DATA['Deimos'].scale)}
+            orbitingPlanetHorizonData={horizonData.data['Mars']}
           />
 
           {/* Jupiter */}
           <PlanetAndOrbit
             modelUrl='/planets/jupiter/scene.glb'
-            scale={0.1005} // Jupiter scale: 0.1005x
+            scale={PLANET_DATA['Jupiter'].scale} // Jupiter scale: 0.1005x
             name='Jupiter'
             horizonData={horizonData.data['Jupiter']}
-            onClick={(pos) => handlePlanetClick('Jupiter', pos, PLANET_SCALES.JUPITER)}
+            onClick={(pos) => handlePlanetClick('Jupiter', pos, PLANET_DATA['Jupiter'].scale)}
           />
 
           {/* Saturn */}
           <PlanetAndOrbit
             modelUrl='/planets/saturn/scene.glb'
-            scale={0.0837} // Saturn scale: 0.0837x
+            scale={PLANET_DATA['Saturn'].scale} // Saturn scale: 0.0837x
             name='Saturn'
             horizonData={horizonData.data['Saturn']}
-            onClick={(pos) => handlePlanetClick('Saturn', pos, PLANET_SCALES.SATURN)}
+            onClick={(pos) => handlePlanetClick('Saturn', pos, PLANET_DATA['Saturn'].scale)}
           />
 
           {/* Uranus */}
           <PlanetAndOrbit
             modelUrl='/planets/uranus/scene.glb'
             name='Uranus'
-            scale={0.0365} // Uranus scale: 0.0365x
+            scale={PLANET_DATA['Uranus'].scale} // Uranus scale: 0.0365x
             horizonData={horizonData.data['Uranus']}
-            onClick={(pos) => handlePlanetClick('Uranus', pos, PLANET_SCALES.URANUS)}
+            onClick={(pos) => handlePlanetClick('Uranus', pos, PLANET_DATA['Uranus'].scale)}
           />
 
           {/* Neptune */}
           <PlanetAndOrbit
             modelUrl='/planets/neptune/scene.glb'
-            scale={0.0354} // Neptune scale: 0.0354x
+            scale={PLANET_DATA['Neptune'].scale} // Neptune scale: 0.0354x
             name='Neptune'
             horizonData={horizonData.data['Neptune']}
-            onClick={(pos) => handlePlanetClick('Neptune', pos, PLANET_SCALES.NEPTUNE)}
+            onClick={(pos) => handlePlanetClick('Neptune', pos, PLANET_DATA['Neptune'].scale)}
           />
         </group>
         {/* <EffectComposer>
