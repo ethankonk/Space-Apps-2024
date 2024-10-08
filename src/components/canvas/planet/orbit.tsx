@@ -31,15 +31,13 @@ export function PlanetOrbit(props: PlanetOrbitProps) {
     rotation = [0, 0, 0],
     color = 'white',
     hoverColor = '',
-    lineWidth = 2,
+    lineWidth,
     longitudeOfAscendingNode,
     argumentOfPeriapsis,
     inclination,
     orbitPosition,
     onClick,
   } = props;
-
-  console.log(`${name}'s orbit position: `, orbitPosition);
 
   // Get the offset for the planet and multiply by ORBIT_MULTIPLIER
   const offset = PLANET_OFFSETS[name] * ORBIT_MULTIPLIER * -1;
@@ -55,7 +53,7 @@ export function PlanetOrbit(props: PlanetOrbitProps) {
     0, // rotation angle
   );
 
-  const points = ellipseCurve.getPoints(100);
+  const points = ellipseCurve.getPoints(500);
   const ellipsePoints = points.map((point) => new THREE.Vector3(point.x, point.y, 0));
 
   const apply3DRotations = (

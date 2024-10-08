@@ -94,7 +94,6 @@ export function Planet(props: PlanetProps) {
     onClick(groupRef.current.position, scale);
   };
 
-  console.log(`${name}'s position: `, position);
   return (
     <group
       ref={groupRef}
