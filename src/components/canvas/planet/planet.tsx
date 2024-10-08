@@ -27,7 +27,6 @@ interface PlanetProps {
 export function Planet(props: PlanetProps) {
   const { name, type, model, position, modelPosition, scale, color, hoverColor, orbitingPlanetHorizonData, onClick } =
     props;
-  const starSize = 0.015;
 
   const groupRef = useRef<THREE.Group>();
   const shapeRef = useRef<THREE.Points>();
@@ -64,11 +63,11 @@ export function Planet(props: PlanetProps) {
       : MathUtils.lerp(groupRef.current.scale.z, 1, hoverEffectSpeed);
 
     const distance = state.camera.position.distanceTo(textRef.current.position);
-    textRef.current.scale.setScalar(distance * (type === 'planet' ? 0.03 : 0.0005));
-    circleRef.current.scale.setScalar(distance * (type === 'planet' ? 0.01 : 0.0002));
-    pooRef.current.scale.setScalar(distance * (type === 'planet' ? 0.01 : 0.0002));
+    textRef.current.scale.setScalar(distance * 0.03);
+    circleRef.current.scale.setScalar(distance * 0.01);
+    pooRef.current.scale.setScalar(distance * 0.01);
 
-    const adjustedMaxDistance = MAX_VISIBLE_DISTANCE * (planetFromOrigin / 50) * (type === 'planet' ? 1 : 0.05);
+    const adjustedMaxDistance = MAX_VISIBLE_DISTANCE * (planetFromOrigin / 50) * 0.1;
     const adjustedMinDistance = MIN_VISIBLE_DISTANCE * scale;
     const isRingVisible = distance <= adjustedMaxDistance && distance >= adjustedMinDistance;
     const isTextVisible = distance <= adjustedMaxDistance && distance >= adjustedMinDistance;
@@ -106,7 +105,7 @@ export function Planet(props: PlanetProps) {
         ref={shapeRef}
         object={model.scene}
         rotation={[1.5708, 0, 0]}
-        scale={[0.1 * scale, 0.1 * scale, 0.1 * scale]}
+        scale={[1 * scale, 1 * scale, 1 * scale]}
         position={modelPosition}
       />
       <Billboard>

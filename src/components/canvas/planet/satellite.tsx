@@ -8,8 +8,10 @@ import { GLTF } from 'three-stdlib';
 import useSound from 'use-sound';
 import hover from '../../../sounds/hover-1.mp3';
 import { MAX_VISIBLE_DISTANCE, MIN_VISIBLE_DISTANCE } from './constants';
+import { PlanetDataEntry, PlanetDataEntryArray } from '@/helpers/hooks/api/nasa/types';
+import { PlanetAndOrbit } from './planet-with-orbit/planet-and-orbit';
 
-interface SunProps {
+interface SatelliteProps {
   model?: GLTF & ObjectMap;
   position?: Vector3;
   name?: string;
@@ -17,12 +19,12 @@ interface SunProps {
   scale?: number;
   color?: string;
   hoverColor?: string;
+  orbitingPlanetHorizonData?: PlanetDataEntry[];
   onClick?: (position: Vector3, scale?: number) => void;
 }
 
-export function Sun(props: SunProps) {
-  const { name, model, position, modelPosition, scale, color, hoverColor, onClick } = props;
-  const starSize = 0.015;
+export function Satellite(props: SatelliteProps) {
+  const { name, model, position, modelPosition, scale, color, hoverColor, orbitingPlanetHorizonData, onClick } = props;
 
   const groupRef = useRef<THREE.Group>();
   const shapeRef = useRef<THREE.Points>();
@@ -59,14 +61,15 @@ export function Sun(props: SunProps) {
       : MathUtils.lerp(groupRef.current.scale.z, 1, hoverEffectSpeed);
 
     const distance = state.camera.position.distanceTo(textRef.current.position);
-    textRef.current.scale.setScalar(distance * 0.03);
-    circleRef.current.scale.setScalar(distance * 0.01);
-    pooRef.current.scale.setScalar(distance * 0.01);
+    textRef.current.scale.setScalar(distance * 0.00005);
+    circleRef.current.scale.setScalar(scale * 10);
+    pooRef.current.scale.setScalar(distance * 0.0002);
 
-    const adjustedMaxDistance = MAX_VISIBLE_DISTANCE * (planetFromOrigin / 50);
-    const adjustedMinDistance = MIN_VISIBLE_DISTANCE * scale;
-    const isRingVisible = distance <= adjustedMaxDistance && distance >= adjustedMinDistance;
-    const isTextVisible = distance <= adjustedMaxDistance && distance >= adjustedMinDistance;
+    const adjustedMaxDistance = MAX_VISIBLE_DISTANCE * (planetFromOrigin / 50) * 0.05;
+    // const adjustedMinDistance = MIN_VISIBLE_DISTANCE * scale;
+    // const isRingVisible = distance <= adjustedMaxDistance;
+    const isRingVisible = true;
+    const isTextVisible = distance <= adjustedMaxDistance;
 
     textRef.current.visible = isTextVisible;
     circleRef.current.visible = isRingVisible;
@@ -101,10 +104,9 @@ export function Sun(props: SunProps) {
         ref={shapeRef}
         object={model.scene}
         rotation={[1.5708, 0, 0]}
-        scale={[1 * scale, 1 * scale, 1 * scale]}
+        scale={[0.0092 * scale, 0.0092 * scale, 0.0092 * scale]}
         position={modelPosition}
       />
-
       <Billboard>
         <Text
           ref={textRef}

@@ -5,15 +5,15 @@ import * as THREE from 'three';
 import { Vector3 } from 'three';
 import { PLANET_DATA, ORBIT_MULTIPLIER } from '../constants';
 import { PlanetOrbit } from '../orbit';
-import { Planet } from '../planet';
+import { Satellite } from '../satellite';
 import { getPlanetPosition, getNearestPointOnOrbit } from './utils';
 import { useFrame } from '@react-three/fiber';
 import { rotate } from 'maath/dist/declarations/src/buffer';
 
-interface PlanetAndOrbitProps {
+interface SatelliteAndOrbitProps {
   modelUrl: string;
   name: keyof typeof PLANET_DATA;
-  type?: string;
+  orbitingBodyName: keyof typeof PLANET_DATA;
   horizonData: PlanetDataEntry[];
   orbitPosition?: THREE.Vector3;
   orbitRotation?: THREE.Euler;
@@ -23,10 +23,10 @@ interface PlanetAndOrbitProps {
   onClick?: (position: Vector3, scale?: number) => void;
 }
 
-export function PlanetAndOrbit({
+export function SatelliteAndOrbit({
   modelUrl,
   name,
-  type = 'planet',
+  orbitingBodyName,
   horizonData,
   orbitPosition,
   orbitRotation = new THREE.Euler(0, 0, 0),
@@ -34,7 +34,7 @@ export function PlanetAndOrbit({
   scale = 1,
   orbitingPlanetHorizonData = [{ time: '', datetime: '', x: 0, y: 0, z: 0 }],
   onClick,
-}: PlanetAndOrbitProps) {
+}: SatelliteAndOrbitProps) {
   const planetModel = useGLTF(modelUrl);
   const [sMajor, setSMajor] = useState(1);
   const [sMinor, setSMinor] = useState(1);
@@ -45,8 +45,16 @@ export function PlanetAndOrbit({
   const [rotatedEllipsePoints, setRotatedEllipsePoints] = useState<THREE.Vector3[]>([]);
   const offset = PLANET_DATA[name].offset * ORBIT_MULTIPLIER * -1;
 
+  const [orbitingBodySMajor, setOrbitingBodySMajor] = useState(1);
+  const [orbitingBodySMinor, setOrbitingBodySMinor] = useState(1);
+  const [orbitingBodyInclination, setOrbitingBodyInclination] = useState(0);
+  const [orbitingBodyLongitudeOfAscendingNode, setOrbitingBodyLongitudeOfAscendingNode] = useState(0);
+  const [orbitingBodyArgumentOfPeriapsis, setOrbitingBodyArgumentOfPeriapsis] = useState(0);
+  const orbitingBodyOffset = PLANET_DATA[orbitingBodyName].offset * ORBIT_MULTIPLIER * -1;
+
   useEffect(() => {
     const planetData = PLANET_DATA[name];
+    const orbitingBodyData = PLANET_DATA[orbitingBodyName];
 
     if (planetData) {
       setSMajor(planetData.semiMajorAxis * ORBIT_MULTIPLIER);
@@ -54,6 +62,14 @@ export function PlanetAndOrbit({
       setInclination(planetData.inclination);
       setLongitudeOfAscendingNode(planetData.longitudeOfAscendingNode);
       setArgumentOfPeriapsis(planetData.argumentOfPeriapsis);
+    }
+
+    if (orbitingBodyData) {
+      setOrbitingBodySMajor(orbitingBodyData.semiMajorAxis * ORBIT_MULTIPLIER);
+      setOrbitingBodySMinor(orbitingBodyData.semiMinorAxis * ORBIT_MULTIPLIER);
+      setOrbitingBodyInclination(orbitingBodyData.inclination);
+      setOrbitingBodyLongitudeOfAscendingNode(orbitingBodyData.longitudeOfAscendingNode);
+      setOrbitingBodyArgumentOfPeriapsis(orbitingBodyData.argumentOfPeriapsis);
     }
 
     if (horizonData && horizonData.length) {
@@ -65,6 +81,24 @@ export function PlanetAndOrbit({
         latestPosition[2] * ORBIT_MULTIPLIER,
       );
 
+      const orbitPositionAdjusted = orbitingPlanetHorizonData.length
+        ? new THREE.Vector3(
+            orbitingPlanetHorizonData[0].x * ORBIT_MULTIPLIER,
+            orbitingPlanetHorizonData[0].y * ORBIT_MULTIPLIER,
+            orbitingPlanetHorizonData[0].z * ORBIT_MULTIPLIER,
+          )
+        : new THREE.Vector3(0, 0, 0);
+
+      const [orbitingBodyNearestPoint] = getNearestPointOnOrbit(
+        orbitPositionAdjusted,
+        orbitingBodySMajor,
+        orbitingBodySMinor,
+        orbitingBodyInclination,
+        orbitingBodyLongitudeOfAscendingNode,
+        orbitingBodyArgumentOfPeriapsis,
+        orbitingBodyOffset,
+      );
+
       const [nearestPoint, rotatedEllipsePoints] = getNearestPointOnOrbit(
         scaledPosition,
         sMajor,
@@ -73,7 +107,9 @@ export function PlanetAndOrbit({
         longitudeOfAscendingNode,
         argumentOfPeriapsis,
         offset,
+        orbitingBodyNearestPoint, // Pass the orbit position
       );
+
       setRotatedEllipsePoints(rotatedEllipsePoints);
       setPlanetPos([nearestPoint.x, nearestPoint.y, nearestPoint.z]);
     } else {
@@ -88,9 +124,8 @@ export function PlanetAndOrbit({
 
   return (
     <group>
-      <Planet
+      <Satellite
         model={planetModel}
-        type={type}
         position={new Vector3(planetPos[0], planetPos[1], planetPos[2])}
         name={name}
         modelPosition={modelPosition}
