@@ -9,6 +9,7 @@ import { Planet } from '../planet';
 import { planetOrbitalData } from './types';
 import { getPlanetPosition } from './utils';
 import { useFrame } from '@react-three/fiber';
+import { rotate } from 'maath/dist/declarations/src/buffer';
 
 interface PlanetAndOrbitProps {
   modelUrl: string;
@@ -31,8 +32,8 @@ function getNearestPointOnOrbit(
   longitudeOfAscendingNode: number,
   argumentOfPeriapsis: number,
   offset: number,
-  orbitPosition: THREE.Vector3 // Add orbit position as a parameter
-): THREE.Vector3 {
+  orbitPosition: THREE.Vector3, // Add orbit position as a parameter
+): [THREE.Vector3, any[]] {
   // Generate points on the ellipse
   const ellipseCurve = new THREE.EllipseCurve(
     offset, // center X (relative to orbit center)
@@ -42,7 +43,7 @@ function getNearestPointOnOrbit(
     0, // start angle
     2 * Math.PI, // end angle (full orbit)
     false, // clockwise
-    0 // rotation angle
+    0, // rotation angle
   );
 
   const points = ellipseCurve.getPoints(1000);
@@ -53,7 +54,7 @@ function getNearestPointOnOrbit(
     points: THREE.Vector3[],
     inclination: number,
     longitudeOfAscendingNode: number,
-    argumentOfPeriapsis: number
+    argumentOfPeriapsis: number,
   ) => {
     const rotationMatrix = new THREE.Matrix4();
 
@@ -76,13 +77,11 @@ function getNearestPointOnOrbit(
     ellipsePoints,
     inclination,
     longitudeOfAscendingNode,
-    argumentOfPeriapsis
+    argumentOfPeriapsis,
   );
 
   // Adjust points by the orbit's position
-  const adjustedEllipsePoints = rotatedEllipsePoints.map((point) =>
-    point.add(orbitPosition)
-  );
+  const adjustedEllipsePoints = rotatedEllipsePoints.map((point) => point.add(orbitPosition));
 
   // Find the nearest point on the ellipse
   let nearestPoint = adjustedEllipsePoints[0];
@@ -96,7 +95,7 @@ function getNearestPointOnOrbit(
     }
   }
 
-  return nearestPoint;
+  return [nearestPoint, rotatedEllipsePoints];
 }
 
 export function PlanetAndOrbit({
@@ -118,6 +117,7 @@ export function PlanetAndOrbit({
   const [inclination, setInclination] = useState(0);
   const [longitudeOfAscendingNode, setLongitudeOfAscendingNode] = useState(0);
   const [argumentOfPeriapsis, setArgumentOfPeriapsis] = useState(0);
+  const [rotatedEllipsePoints, setRotatedEllipsePoints] = useState<THREE.Vector3[]>([]);
   const offset = PLANET_OFFSETS[name] * ORBIT_MULTIPLIER * -1;
 
   useEffect(() => {
@@ -144,11 +144,11 @@ export function PlanetAndOrbit({
         ? new THREE.Vector3(
             orbitingPlanetHorizonData[0].x * ORBIT_MULTIPLIER,
             orbitingPlanetHorizonData[0].y * ORBIT_MULTIPLIER,
-            orbitingPlanetHorizonData[0].z * ORBIT_MULTIPLIER
+            orbitingPlanetHorizonData[0].z * ORBIT_MULTIPLIER,
           )
         : new THREE.Vector3(0, 0, 0);
 
-      const nearestPoint = getNearestPointOnOrbit(
+      const [nearestPoint, rotatedEllipsePoints] = getNearestPointOnOrbit(
         scaledPosition,
         sMajor,
         sMinor,
@@ -156,9 +156,9 @@ export function PlanetAndOrbit({
         longitudeOfAscendingNode,
         argumentOfPeriapsis,
         offset,
-        orbitPositionAdjusted // Pass the orbit position
+        orbitPositionAdjusted, // Pass the orbit position
       );
-
+      setRotatedEllipsePoints(rotatedEllipsePoints);
       setPlanetPos([nearestPoint.x, nearestPoint.y, nearestPoint.z]);
     } else {
       // fallback to a random orbit position when Horizon data is not available
@@ -184,23 +184,16 @@ export function PlanetAndOrbit({
         hoverColor={hoverColor[name]}
         orbitingPlanetHorizonData={orbitingPlanetHorizonData}
       />
-      <PlanetOrbit
-        name={name}
-        sMajor={sMajor}
-        sMinor={sMinor}
-        inclination={inclination}
-        longitudeOfAscendingNode={longitudeOfAscendingNode}
-        argumentOfPeriapsis={argumentOfPeriapsis}
-        position={[
-          orbitingPlanetHorizonData[0].x * ORBIT_MULTIPLIER,
-          orbitingPlanetHorizonData[0].y * ORBIT_MULTIPLIER,
-          orbitingPlanetHorizonData[0].z * ORBIT_MULTIPLIER,
-        ]}
-        rotation={new THREE.Euler(0, 0, 0)}
-        color={planetColors[name]}
-        hoverColor={hoverColor[name]}
-        onClick={() => onClick(new Vector3(planetPos[0], planetPos[1], planetPos[2]), scale)}
-      />
+      {rotatedEllipsePoints?.length && (
+        <PlanetOrbit
+          name={name}
+          rotation={new THREE.Euler(0, 0, 0)}
+          color={planetColors[name]}
+          hoverColor={hoverColor[name]}
+          rotatedEllipsePointsTest={rotatedEllipsePoints}
+          onClick={() => onClick(new Vector3(planetPos[0], planetPos[1], planetPos[2]), scale)}
+        />
+      )}
     </group>
   );
 }
