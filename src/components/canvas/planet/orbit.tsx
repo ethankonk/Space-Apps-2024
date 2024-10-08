@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import * as THREE from 'three';
 import useSound from 'use-sound';
 import hover from '../../../sounds/hover-1.mp3';
-import { PLANET_OFFSETS, ORBIT_MULTIPLIER } from './constants';
 
 interface PlanetOrbitProps {
   name?: string;
