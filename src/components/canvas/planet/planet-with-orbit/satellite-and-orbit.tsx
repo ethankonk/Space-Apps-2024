@@ -109,7 +109,7 @@ export function SatelliteAndOrbit({
         longitudeOfAscendingNode,
         argumentOfPeriapsis,
         offset,
-        orbitingBodyNearestPoint, // Pass the orbit position
+        new Vector3(0, 0, 0), // Pass the orbit position
       );
 
       setRotatedEllipsePoints(rotatedEllipsePoints);
@@ -125,10 +125,11 @@ export function SatelliteAndOrbit({
   }, [name, horizonData, sMajor, sMinor, inclination]);
 
   return (
-    <group>
+    <group position={orbitingBodyNearestPoint}>
       <Satellite
         model={planetModel}
         position={new Vector3(planetPos[0], planetPos[1], planetPos[2])}
+        // position={new Vector3(0, 0, 0)}
         name={name}
         modelPosition={modelPosition}
         scale={scale}
@@ -141,7 +142,7 @@ export function SatelliteAndOrbit({
         <PlanetOrbit
           name={name}
           rotation={new THREE.Euler(0, 0, 0)}
-          position={orbitingBodyNearestPoint}
+          position={new Vector3(0, 0, 0)}
           color={PLANET_DATA[name].color}
           hoverColor={PLANET_DATA[name].hoverColor}
           rotatedEllipsePointsTest={rotatedEllipsePoints}

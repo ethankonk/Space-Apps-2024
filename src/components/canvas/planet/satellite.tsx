@@ -61,15 +61,15 @@ export function Satellite(props: SatelliteProps) {
       : MathUtils.lerp(groupRef.current.scale.z, 1, hoverEffectSpeed);
 
     const distance = state.camera.position.distanceTo(textRef.current.position);
-    textRef.current.scale.setScalar(distance * 0.00005);
-    circleRef.current.scale.setScalar(scale * 10);
+    textRef.current.scale.setScalar(scale * 20);
+    circleRef.current.scale.setScalar(scale * 20);
     pooRef.current.scale.setScalar(distance * 0.0002);
 
     const adjustedMaxDistance = MAX_VISIBLE_DISTANCE * (planetFromOrigin / 50) * 0.05;
     // const adjustedMinDistance = MIN_VISIBLE_DISTANCE * scale;
     // const isRingVisible = distance <= adjustedMaxDistance;
     const isRingVisible = true;
-    const isTextVisible = distance <= adjustedMaxDistance;
+    const isTextVisible = true;
 
     textRef.current.visible = isTextVisible;
     circleRef.current.visible = isRingVisible;
@@ -111,7 +111,7 @@ export function Satellite(props: SatelliteProps) {
         <Text
           ref={textRef}
           scale={0.1}
-          position={[5 * scale, 6 * scale, 0]}
+          position={[30 * scale, 12 * scale, 0]}
           anchorX='left'
           anchorY='top'
           font='/Montserrat-SemiBold.ttf'

@@ -2,19 +2,19 @@ import { NextResponse } from 'next/server';
 import pLimit from 'p-limit';
 
 export async function GET(req) {
-  const planetCommands = {
-    Mercury: '199',
-    Venus: '299',
-    Earth: '399',
-    Mars: '499',
-    Jupiter: '599',
-    Saturn: '699',
-    Uranus: '799',
-    Neptune: '899',
-    Moon: '301',
-    Deimos: '401',
-    Phobos: '402',
-  };
+  const planetCommands = [
+    { name: 'Mercury', command: '199', center: '10' },
+    { name: 'Venus', command: '299', center: '10' },
+    { name: 'Earth', command: '399', center: '10' },
+    { name: 'Mars', command: '499', center: '10' },
+    { name: 'Jupiter', command: '599', center: '10' },
+    { name: 'Saturn', command: '699', center: '10' },
+    { name: 'Uranus', command: '799', center: '10' },
+    { name: 'Neptune', command: '899', center: '10' },
+    { name: 'Moon', command: '301', center: '399' }, // Moon orbits Earth
+    { name: 'Deimos', command: '401', center: '499' }, // Deimos orbits Mars
+    { name: 'Phobos', command: '402', center: '499' }, // Phobos orbits Mars
+  ];
 
   const today = new Date();
   const yyyy = today.getUTCFullYear();
@@ -31,7 +31,7 @@ export async function GET(req) {
   try {
     const limit = pLimit(2);
 
-    const fetchPromises = Object.entries(planetCommands).map(([planetName, command], index) => {
+    const fetchPromises = planetCommands.map(({ name, command, center }, index) => {
       return limit(async () => {
         // we add delay between requests
         await delay(index * 100);
@@ -43,7 +43,7 @@ export async function GET(req) {
           OBJ_DATA: "'NO'",
           MAKE_EPHEM: "'YES'",
           EPHEM_TYPE: "'VECTORS'",
-          CENTER: "'500@10'",
+          CENTER: `'500@${center}'`,
           START_TIME: `'${startTime}'`,
           STOP_TIME: `'${stopTime}'`,
           STEP_SIZE: "'1d'",
@@ -59,7 +59,7 @@ export async function GET(req) {
 
         if (!apiRes.ok) {
           const errorDetails = await apiRes.text();
-          console.error(`Horizons API returned status ${apiRes.status} for ${planetName}:`, errorDetails);
+          console.error(`Horizons API returned status ${apiRes.status} for ${name}:`, errorDetails);
           return { planetName, error: errorDetails };
         }
 
@@ -72,8 +72,8 @@ export async function GET(req) {
 
         if (startIndex === -1 || endIndex === -1) {
           const errorMessage = 'No data found between $$SOE and $$EOE markers.';
-          console.error(`Error for ${planetName}: ${errorMessage}`);
-          return { planetName, error: errorMessage };
+          console.error(`Error for ${name}: ${errorMessage}`);
+          return { name, error: errorMessage };
         }
 
         // Extract and format the data lines
@@ -113,7 +113,7 @@ export async function GET(req) {
           }
         }
 
-        return { planetName, data: parsedData };
+        return { name, data: parsedData };
       });
     });
 
@@ -124,9 +124,9 @@ export async function GET(req) {
 
     results.forEach((result) => {
       if (result.error) {
-        errors.push({ planet: result.planetName, error: result.error });
+        errors.push({ planet: result.name, error: result.error });
       } else {
-        dataByPlanet[result.planetName] = result.data;
+        dataByPlanet[result.name] = result.data;
       }
     });
 

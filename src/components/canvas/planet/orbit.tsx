@@ -34,7 +34,7 @@ export function PlanetOrbit(props: PlanetOrbitProps) {
   const [playHover] = useSound(hover, { volume: 0.2 });
 
   return (
-    <group rotation={rotation}>
+    <group rotation={rotation} position={position}>
       <Line points={rotatedEllipsePointsTest} color={currentColor} lineWidth={currentLineWidth} onClick={onClick} />
       <Line
         points={rotatedEllipsePointsTest}
