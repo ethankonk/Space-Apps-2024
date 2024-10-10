@@ -107,6 +107,54 @@ export const PLANET_DATA = {
     color: '#da8b72',
     hoverColor: '#a36855'
   },
+  Io: {
+    semiMajorAxis: 0.002819, // AU (421,700 km)
+    semiMinorAxis: 0.002819, 
+    eccentricity: 0.0041,
+    inclination: 0.036 * (Math.PI / 180),
+    longitudeOfAscendingNode: 100.55615 * (Math.PI / 180),
+    argumentOfPeriapsis: 273.86700 * (Math.PI / 180),
+    scale: 0.286, // Updated scale relative to Earth
+    offset: 0.000011, 
+    color: '#cccccc',
+    hoverColor: '#cc9900'
+  },
+  Europa: {
+    semiMajorAxis: 0.004485, // AU (671,034 km)
+    semiMinorAxis: 0.004485, 
+    eccentricity: 0.0094,
+    inclination: 0.466 * (Math.PI / 180),
+    longitudeOfAscendingNode: 100.55615 * (Math.PI / 180),
+    argumentOfPeriapsis: 273.86700 * (Math.PI / 180),
+    scale: 0.245, // Updated scale relative to Earth
+    offset: 0.000042, 
+    color: '#cccccc',
+    hoverColor: '#6699cc'
+  },
+  Ganymede: {
+      semiMajorAxis: 0.007155, // AU (1,070,412 km)
+      semiMinorAxis: 0.007155, 
+      eccentricity: 0.0013,
+      inclination: 0.177 * (Math.PI / 180),
+      longitudeOfAscendingNode: 100.55615 * (Math.PI / 180),
+      argumentOfPeriapsis: 273.86700 * (Math.PI / 180),
+      scale: 0.413, // Updated scale relative to Earth
+      offset: 0.000009, 
+      color: '#cccccc',
+      hoverColor: '#999999'
+  },
+  Callisto: {
+      semiMajorAxis: 0.012585, // AU (1,882,700 km)
+      semiMinorAxis: 0.012585, 
+      eccentricity: 0.0074,
+      inclination: 0.192 * (Math.PI / 180),
+      longitudeOfAscendingNode: 100.55615 * (Math.PI / 180),
+      argumentOfPeriapsis: 273.86700 * (Math.PI / 180),
+      scale: 0.378, // Updated scale relative to Earth
+      offset: 0.000093, 
+      color: '#999999',
+      hoverColor: '#666666'
+  },
   Saturn: {
     semiMajorAxis: 9.53667594,   // AU
     semiMinorAxis: 9.52039381,   // Calculated value
