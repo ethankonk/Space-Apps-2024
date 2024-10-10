@@ -14,15 +14,30 @@ export async function GET(req) {
     { name: 'Moon', command: '301', center: '399' }, // Moon orbits Earth
     { name: 'Deimos', command: '401', center: '499' }, // Deimos orbits Mars
     { name: 'Phobos', command: '402', center: '499' }, // Phobos orbits Mars
+    { name: 'Io', command: '501', center: '599' }, // Io orbits Jupiter
+    { name: 'Europa', command: '502', center: '599' }, // Europa orbits Jupiter
+    { name: 'Ganymede', command: '503', center: '599' }, // Ganymede orbits Jupiter
+    { name: 'Callisto', command: '504', center: '599' }, // Callisto orbits Jupiter
   ];
 
   const today = new Date();
   const yyyy = today.getUTCFullYear();
   const mm = String(today.getUTCMonth() + 1).padStart(2, '0');
   const dd = String(today.getUTCDate()).padStart(2, '0');
+  const hh = String(today.getUTCHours()).padStart(2, '0');
+  const min = String(today.getUTCMinutes()).padStart(2, '0');
+  const ss = String(today.getUTCSeconds()).padStart(2, '0');
   const dateString = `${yyyy}-${mm}-${dd}`;
-  const startTime = `${dateString} 00:00:00`;
-  const stopTime = `${dateString} 00:01:00`;
+  const startTime = `${dateString} ${hh}:${min}:${ss}`;
+
+  const stopTimeDate = new Date(today.getTime() + 60 * 60 * 1000); // Add one hour
+  const stopHh = String(stopTimeDate.getUTCHours()).padStart(2, '0');
+  const stopMin = String(stopTimeDate.getUTCMinutes()).padStart(2, '0');
+  const stopSs = String(stopTimeDate.getUTCSeconds()).padStart(2, '0');
+  const stopTime = `${dateString} ${stopHh}:${stopMin}:${stopSs}`;
+
+  console.log('Start Time: ', startTime);
+  console.log('Stop Time: ', stopTime);
 
   function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));

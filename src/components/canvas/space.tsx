@@ -122,7 +122,7 @@ export function Space(props: SpaceProps) {
           {/* Mars */}
           <PlanetAndOrbit
             modelUrl='/planets/mars/scene.glb'
-            scale={PLANET_DATA['Mars'].scale} // Mars scale: 0.0049x
+            scale={PLANET_DATA['Mars'].scale} // Mars scale: 0.0048x
             name='Mars'
             horizonData={horizonData.data['Mars']}
             onClick={(pos) => handlePlanetClick('Mars', pos, PLANET_DATA['Mars'].scale)}
@@ -130,7 +130,7 @@ export function Space(props: SpaceProps) {
 
           <SatelliteAndOrbit
             modelUrl='/planets/mars/phobos/scene.glb'
-            scale={PLANET_DATA['Phobos'].scale} // Moon scale: 0.0025x
+            scale={PLANET_DATA['Phobos'].scale}
             name='Phobos'
             orbitingBodyName='Mars'
             horizonData={horizonData.data['Phobos']}
@@ -140,7 +140,7 @@ export function Space(props: SpaceProps) {
 
           <SatelliteAndOrbit
             modelUrl='/planets/mars/deimos/scene.glb'
-            scale={PLANET_DATA['Deimos'].scale} // Moon scale: 0.0025x
+            scale={PLANET_DATA['Deimos'].scale}
             name='Deimos'
             orbitingBodyName='Mars'
             horizonData={horizonData.data['Deimos']}
@@ -151,10 +151,50 @@ export function Space(props: SpaceProps) {
           {/* Jupiter */}
           <PlanetAndOrbit
             modelUrl='/planets/jupiter/scene.glb'
-            scale={PLANET_DATA['Jupiter'].scale} // Jupiter scale: 0.1005x
+            scale={PLANET_DATA['Jupiter'].scale}
             name='Jupiter'
             horizonData={horizonData.data['Jupiter']}
             onClick={(pos) => handlePlanetClick('Jupiter', pos, PLANET_DATA['Jupiter'].scale)}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/jupiter/io/scene.glb'
+            scale={PLANET_DATA['Io'].scale}
+            name='Io'
+            orbitingBodyName='Jupiter'
+            horizonData={horizonData.data['Io']}
+            onClick={(pos) => handlePlanetClick('Io', pos, PLANET_DATA['Io'].scale)}
+            orbitingPlanetHorizonData={horizonData.data['Jupiter']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/jupiter/europa/scene.glb'
+            scale={PLANET_DATA['Europa'].scale}
+            name='Europa'
+            orbitingBodyName='Jupiter'
+            horizonData={horizonData.data['Europa']}
+            onClick={(pos) => handlePlanetClick('Europa', pos, PLANET_DATA['Europa'].scale)}
+            orbitingPlanetHorizonData={horizonData.data['Jupiter']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/jupiter/ganymede/scene.glb'
+            scale={PLANET_DATA['Ganymede'].scale}
+            name='Ganymede'
+            orbitingBodyName='Jupiter'
+            horizonData={horizonData.data['Ganymede']}
+            onClick={(pos) => handlePlanetClick('Ganymede', pos, PLANET_DATA['Ganymede'].scale)}
+            orbitingPlanetHorizonData={horizonData.data['Jupiter']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/jupiter/callisto/scene.glb'
+            scale={PLANET_DATA['Callisto'].scale}
+            name='Callisto'
+            orbitingBodyName='Jupiter'
+            horizonData={horizonData.data['Callisto']}
+            onClick={(pos) => handlePlanetClick('Callisto', pos, PLANET_DATA['Callisto'].scale)}
+            orbitingPlanetHorizonData={horizonData.data['Jupiter']}
           />
 
           {/* Saturn */}
