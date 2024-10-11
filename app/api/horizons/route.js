@@ -18,6 +18,13 @@ export async function GET(req) {
     { name: 'Europa', command: '502', center: '599' }, // Europa orbits Jupiter
     { name: 'Ganymede', command: '503', center: '599' }, // Ganymede orbits Jupiter
     { name: 'Callisto', command: '504', center: '599' }, // Callisto orbits Jupiter
+    { name: 'Titan', command: '606', center: '699' }, // Titan orbits Saturn
+    { name: 'Rhea', command: '605', center: '699' }, // Rhea orbits Saturn
+    { name: 'Iapetus', command: '608', center: '699' }, // Iapetus orbits Saturn
+    { name: 'Dione', command: '604', center: '699' }, // Dione orbits Saturn
+    { name: 'Tethys', command: '603', center: '699' }, // Tethys orbits Saturn
+    { name: 'Enceladus', command: '602', center: '699' }, // Enceladus orbits Saturn
+    { name: 'Mimas', command: '601', center: '699' }, // Mimas orbits Saturn
   ];
 
   const today = new Date();

@@ -2,7 +2,7 @@ import { scale } from "maath/dist/declarations/src/vector2";
 
 export const ORBIT_MULTIPLIER = 100000;
 export const MAX_VISIBLE_DISTANCE = 20000; // CHANGE THIS LATER
-export const MIN_VISIBLE_DISTANCE = 2400000; // CHANGE THIS LATER
+export const MIN_VISIBLE_DISTANCE = 1000; // CHANGE THIS LATER
 export const MIN_DOLLY_DISTANCE = 0;
 export const MAX_DOLLY_DISTANCE = 7500000;
 export const MIN_RADIUS = 10;
@@ -166,6 +166,90 @@ export const PLANET_DATA = {
     offset: 0.5386, // 0.05386179 * 9.53667594
     color: '#d5c187',
     hoverColor: '#786d4c'
+  },
+  Titan: {
+    semiMajorAxis: 0.008167, // AU (1,222,000 km)
+    semiMinorAxis: 0.008167,
+    eccentricity: 0.0288,
+    inclination: 0.34854 * (Math.PI / 180),
+    longitudeOfAscendingNode: 113.665 * (Math.PI / 180),
+    argumentOfPeriapsis: 189.64 * (Math.PI / 180),
+    scale: 0.404, // Updated scale relative to Earth
+    offset: 0.008167 * 0.0288,
+    color: '#cccccc',
+    hoverColor: '#ffcc00'
+  },
+  Rhea: {
+      semiMajorAxis: 0.003523, // AU (527,108 km)
+      semiMinorAxis: 0.003523,
+      eccentricity: 0.0012583,
+      inclination: 0.345 * (Math.PI / 180),
+      longitudeOfAscendingNode: 112.790 * (Math.PI / 180),
+      argumentOfPeriapsis: 251.731 * (Math.PI / 180),
+      scale: 0.120, // Updated scale relative to Earth
+      offset: 0.003523 * 0.0012583,
+      color: '#cccccc',
+      hoverColor: '#6699cc'
+  },
+  Iapetus: {
+      semiMajorAxis: 0.023802, // AU (3,561,300 km)
+      semiMinorAxis: 0.023802,
+      eccentricity: 0.028612,
+      inclination: 15.47 * (Math.PI / 180),
+      longitudeOfAscendingNode: 77.28 * (Math.PI / 180),
+      argumentOfPeriapsis: 318.16 * (Math.PI / 180),
+      scale: 0.115, // Updated scale relative to Earth
+      offset: 0.023802 * 0.028612,
+      color: '#cccccc',
+      hoverColor: '#6699cc'
+  },
+  Dione: {
+      semiMajorAxis: 0.002523, // AU (377,396 km)
+      semiMinorAxis: 0.002523,
+      eccentricity: 0.0022,
+      inclination: 0.0288 * (Math.PI / 180),
+      longitudeOfAscendingNode: 168.76 * (Math.PI / 180),
+      argumentOfPeriapsis: 293.2 * (Math.PI / 180),
+      scale: 0.088, // Updated scale relative to Earth
+      offset: 0.002523 * 0.0022,
+      color: '#cccccc',
+      hoverColor: '#6699cc'
+  },
+  Tethys: {
+      semiMajorAxis: 0.001969, // AU (294,619 km)
+      semiMinorAxis: 0.001969,
+      eccentricity: 0.0001,
+      inclination: 1.12 * (Math.PI / 180),
+      longitudeOfAscendingNode: 0 * (Math.PI / 180),
+      argumentOfPeriapsis: 0 * (Math.PI / 180),
+      scale: 0.083, // Updated scale relative to Earth
+      offset: 0.001969 * 0.0001,
+      color: '#cccccc',
+      hoverColor: '#6699cc'
+  },
+  Enceladus: {
+      semiMajorAxis: 0.001591, // AU (238,042 km)
+      semiMinorAxis: 0.001591,
+      eccentricity: 0.0047,
+      inclination: 0.009 * (Math.PI / 180),
+      longitudeOfAscendingNode: 168.76 * (Math.PI / 180),
+      argumentOfPeriapsis: 293.2 * (Math.PI / 180),
+      scale: 0.040, // Updated scale relative to Earth
+      offset: 0.001591 * 0.0047,
+      color: '#cccccc',
+      hoverColor: '#6699cc'
+  },
+  Mimas: {
+      semiMajorAxis: 0.001243, // AU (185,539 km)
+      semiMinorAxis: 0.001243,
+      eccentricity: 0.0196,
+      inclination: 1.574 * (Math.PI / 180),
+      longitudeOfAscendingNode: 0 * (Math.PI / 180),
+      argumentOfPeriapsis: 0 * (Math.PI / 180),
+      scale: 0.031, // Updated scale relative to Earth
+      offset: 0.001243 * 0.0196,
+      color: '#cccccc',
+      hoverColor: '#6699cc'
   },
   Uranus: {
     semiMajorAxis: 19.18916464,  // AU

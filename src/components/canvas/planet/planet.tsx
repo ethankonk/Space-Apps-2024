@@ -1,7 +1,7 @@
 import { Billboard, Text } from '@react-three/drei';
 import { ObjectMap, useFrame } from '@react-three/fiber';
 import { Color, Vector3 } from 'three';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { MathUtils } from 'three';
 import { GLTF } from 'three-stdlib';
@@ -10,6 +10,7 @@ import hover from '../../../sounds/hover-1.mp3';
 import { MAX_VISIBLE_DISTANCE, MIN_VISIBLE_DISTANCE } from './constants';
 import { PlanetDataEntry, PlanetDataEntryArray } from '@/helpers/hooks/api/nasa/types';
 import { PlanetAndOrbit } from './planet-with-orbit/planet-and-orbit';
+import { group } from 'console';
 
 interface PlanetProps {
   model?: GLTF & ObjectMap;
@@ -37,6 +38,7 @@ export function Planet(props: PlanetProps) {
   const circleMaterialRef = useRef<THREE.MeshBasicMaterial>();
 
   const [hovered, setHovered] = useState(false);
+  const [isClickable, setIsClickable] = useState(true);
 
   const [playHover] = useSound(hover);
 
@@ -62,19 +64,25 @@ export function Planet(props: PlanetProps) {
       ? MathUtils.lerp(groupRef.current.scale.z, hoverScale, hoverEffectSpeed)
       : MathUtils.lerp(groupRef.current.scale.z, 1, hoverEffectSpeed);
 
-    const distance = state.camera.position.distanceTo(textRef.current.position);
+    // Apply inverse scaling to the shapeRef to counteract group scaling
+    shapeRef.current.scale.x = scale / groupRef.current.scale.x;
+    shapeRef.current.scale.y = scale / groupRef.current.scale.y;
+    shapeRef.current.scale.z = scale / groupRef.current.scale.z;
+
+    const distance = state.camera.position.distanceTo(groupRef.current.position);
     textRef.current.scale.setScalar(distance * 0.03);
     circleRef.current.scale.setScalar(distance * 0.01);
     pooRef.current.scale.setScalar(distance * 0.01);
 
     const adjustedMaxDistance = MAX_VISIBLE_DISTANCE * (planetFromOrigin / 50) * 0.1;
-    const adjustedMinDistance = MIN_VISIBLE_DISTANCE * scale;
+    const adjustedMinDistance = MIN_VISIBLE_DISTANCE * (5 + scale);
     const isRingVisible = distance <= adjustedMaxDistance && distance >= adjustedMinDistance;
     const isTextVisible = distance <= adjustedMaxDistance && distance >= adjustedMinDistance;
 
     textRef.current.visible = isTextVisible;
     circleRef.current.visible = isRingVisible;
-    // textRef.current.size =
+
+    setIsClickable(distance > adjustedMinDistance);
   });
 
   const handlePointerEnter = () => {
@@ -90,6 +98,7 @@ export function Planet(props: PlanetProps) {
   };
 
   const handleClick = () => {
+    if (!isClickable) return;
     onClick(groupRef.current.position, scale);
   };
 

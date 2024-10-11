@@ -9,6 +9,7 @@ import { Satellite } from '../satellite';
 import { getPlanetPosition, getNearestPointOnOrbit } from './utils';
 import { useFrame } from '@react-three/fiber';
 import { rotate } from 'maath/dist/declarations/src/buffer';
+import { on } from 'events';
 
 interface SatelliteAndOrbitProps {
   modelUrl: string;
@@ -114,21 +115,23 @@ export function SatelliteAndOrbit({
 
       setRotatedEllipsePoints(rotatedEllipsePoints);
       setPlanetPos([nearestPoint.x, nearestPoint.y, nearestPoint.z]);
-    } else {
-      // fallback to a random orbit position when Horizon data is not available
-      const angle = Math.random() * 2 * Math.PI;
-      const x = sMajor * Math.cos(angle);
-      const y = sMinor * Math.sin(angle);
-      const position = new THREE.Vector3(x, y, 0);
-      setPlanetPos([position.x, position.y, position.z]);
+    // } else {
+    //   // fallback to a random orbit position when Horizon data is not available
+    //   const angle = Math.random() * 2 * Math.PI;
+    //   const x = sMajor * Math.cos(angle);
+    //   const y = sMinor * Math.sin(angle);
+    //   const position = new THREE.Vector3(x, y, 0);
+    //   setPlanetPos([position.x, position.y, position.z]);
     }
   }, [name, horizonData, sMajor, sMinor, inclination]);
 
+ 
   return (
     <group position={orbitingBodyNearestPoint}>
       <Satellite
         model={planetModel}
         position={new Vector3(planetPos[0], planetPos[1], planetPos[2])}
+        orbitingBodyPosition={new Vector3(orbitingBodyNearestPoint.x, orbitingBodyNearestPoint.y, orbitingBodyNearestPoint.z)}
         // position={new Vector3(0, 0, 0)}
         name={name}
         modelPosition={modelPosition}

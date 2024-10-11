@@ -14,6 +14,7 @@ import { PlanetAndOrbit } from './planet-with-orbit/planet-and-orbit';
 interface SatelliteProps {
   model?: GLTF & ObjectMap;
   position?: Vector3;
+  orbitingBodyPosition?: Vector3;
   name?: string;
   modelPosition?: Vector3;
   scale?: number;
@@ -24,7 +25,7 @@ interface SatelliteProps {
 }
 
 export function Satellite(props: SatelliteProps) {
-  const { name, model, position, modelPosition, scale, color, hoverColor, orbitingPlanetHorizonData, onClick } = props;
+  const { name, model, position, orbitingBodyPosition, modelPosition, scale, color, hoverColor, orbitingPlanetHorizonData, onClick } = props;
 
   const groupRef = useRef<THREE.Group>();
   const shapeRef = useRef<THREE.Points>();
@@ -60,10 +61,15 @@ export function Satellite(props: SatelliteProps) {
       ? MathUtils.lerp(groupRef.current.scale.z, hoverScale, hoverEffectSpeed)
       : MathUtils.lerp(groupRef.current.scale.z, 1, hoverEffectSpeed);
 
+    // Apply inverse scaling to the shapeRef to counteract group scaling
+    shapeRef.current.scale.x = scale * 0.0092 / groupRef.current.scale.x;
+    shapeRef.current.scale.y = scale * 0.0092 / groupRef.current.scale.y;
+    shapeRef.current.scale.z = scale * 0.0092 / groupRef.current.scale.z;
+
     const distance = state.camera.position.distanceTo(textRef.current.position);
-    textRef.current.scale.setScalar(scale * 20);
-    circleRef.current.scale.setScalar(scale * 20);
-    pooRef.current.scale.setScalar(distance * 0.0002);
+    textRef.current.scale.setScalar(scale * 100);
+    circleRef.current.scale.setScalar(scale * 70);
+    pooRef.current.scale.setScalar(scale * 70);
 
     const adjustedMaxDistance = MAX_VISIBLE_DISTANCE * (planetFromOrigin / 50) * 0.05;
     // const adjustedMinDistance = MIN_VISIBLE_DISTANCE * scale;
@@ -89,7 +95,8 @@ export function Satellite(props: SatelliteProps) {
   };
 
   const handleClick = () => {
-    onClick(groupRef.current.position, scale);
+    // onClick(new Vector3(orbitingBodyPosition.x + position.x, orbitingBodyPosition.y + position.y, orbitingBodyPosition.z + position.z), scale);
+    onClick(new Vector3(orbitingBodyPosition.x + position.x, orbitingBodyPosition.y + position.y, orbitingBodyPosition.z + position.z), scale * 0.0092);
   };
 
   return (
@@ -111,7 +118,7 @@ export function Satellite(props: SatelliteProps) {
         <Text
           ref={textRef}
           scale={0.1}
-          position={[30 * scale, 12 * scale, 0]}
+          position={[100 * scale, 12 * scale, 0]}
           anchorX='left'
           anchorY='top'
           font='/Montserrat-SemiBold.ttf'

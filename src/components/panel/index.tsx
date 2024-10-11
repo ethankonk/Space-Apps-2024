@@ -50,12 +50,12 @@ export function Panel(props: PanelProps) {
 
   return (
     <Html
-      className='flex items-center justify-start transition-opacity duration-1000 ease-in-out pl-10'
+      className='flex relative pointer-events-none items-center justify-start transition-opacity duration-1000 ease-in-out pl-10'
       style={{ opacity }}
       fullscreen
     >
       <div
-        className={`relative flex flex-col space-y-6 h-[80vh] w-[50vw] max-w-sm p-6 rounded-2xl border-1.2 transition-colors duration-500 bg-black bg-opacity-60`}
+        className={`relative pointer-events-auto flex flex-col space-y-6 h-[80vh] w-[50vw] max-w-sm p-6 rounded-2xl border-1.2 transition-colors duration-500 bg-black bg-opacity-60`}
         style={{
           borderColor: planetColor,
           boxShadow: `0 0 5px ${planetColor}`,
