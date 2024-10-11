@@ -115,7 +115,7 @@ export function Space(props: SpaceProps) {
             name='Moon'
             orbitingBodyName='Earth'
             horizonData={horizonData.data['Moon']}
-            onClick={(pos) => handlePlanetClick('Moon', pos, PLANET_DATA['Moon'].scale)}
+            onClick={(pos, scale) => handlePlanetClick('Moon', pos, scale)}
             orbitingPlanetHorizonData={horizonData.data['Earth']}
           />
 
@@ -134,7 +134,7 @@ export function Space(props: SpaceProps) {
             name='Phobos'
             orbitingBodyName='Mars'
             horizonData={horizonData.data['Phobos']}
-            onClick={(pos) => handlePlanetClick('Phobos', pos, PLANET_DATA['Phobos'].scale)}
+            onClick={(pos, scale) => handlePlanetClick('Phobos', pos, scale)}
             orbitingPlanetHorizonData={horizonData.data['Mars']}
           />
 
@@ -144,7 +144,7 @@ export function Space(props: SpaceProps) {
             name='Deimos'
             orbitingBodyName='Mars'
             horizonData={horizonData.data['Deimos']}
-            onClick={(pos) => handlePlanetClick('Deimos', pos, PLANET_DATA['Deimos'].scale)}
+            onClick={(pos, scale) => handlePlanetClick('Deimos', pos, scale)}
             orbitingPlanetHorizonData={horizonData.data['Mars']}
           />
 
@@ -163,7 +163,7 @@ export function Space(props: SpaceProps) {
             name='Io'
             orbitingBodyName='Jupiter'
             horizonData={horizonData.data['Io']}
-            onClick={(pos) => handlePlanetClick('Io', pos, PLANET_DATA['Io'].scale)}
+            onClick={(pos, scale) => handlePlanetClick('Io', pos, scale)}
             orbitingPlanetHorizonData={horizonData.data['Jupiter']}
           />
 
@@ -173,7 +173,7 @@ export function Space(props: SpaceProps) {
             name='Europa'
             orbitingBodyName='Jupiter'
             horizonData={horizonData.data['Europa']}
-            onClick={(pos) => handlePlanetClick('Europa', pos, PLANET_DATA['Europa'].scale)}
+            onClick={(pos, scale) => handlePlanetClick('Europa', pos, scale)}
             orbitingPlanetHorizonData={horizonData.data['Jupiter']}
           />
 
@@ -183,7 +183,7 @@ export function Space(props: SpaceProps) {
             name='Ganymede'
             orbitingBodyName='Jupiter'
             horizonData={horizonData.data['Ganymede']}
-            onClick={(pos) => handlePlanetClick('Ganymede', pos, PLANET_DATA['Ganymede'].scale)}
+            onClick={(pos, scale) => handlePlanetClick('Ganymede', pos, scale)}
             orbitingPlanetHorizonData={horizonData.data['Jupiter']}
           />
 
@@ -193,7 +193,7 @@ export function Space(props: SpaceProps) {
             name='Callisto'
             orbitingBodyName='Jupiter'
             horizonData={horizonData.data['Callisto']}
-            onClick={(pos) => handlePlanetClick('Callisto', pos, PLANET_DATA['Callisto'].scale)}
+            onClick={(pos, scale) => handlePlanetClick('Callisto', pos, scale)}
             orbitingPlanetHorizonData={horizonData.data['Jupiter']}
           />
 
@@ -204,6 +204,76 @@ export function Space(props: SpaceProps) {
             name='Saturn'
             horizonData={horizonData.data['Saturn']}
             onClick={(pos) => handlePlanetClick('Saturn', pos, PLANET_DATA['Saturn'].scale)}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/saturn/titan/scene.glb'
+            scale={PLANET_DATA['Titan'].scale}
+            name='Titan'
+            orbitingBodyName='Saturn'
+            horizonData={horizonData.data['Titan']}
+            onClick={(pos, scale) => handlePlanetClick('Titan', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Saturn']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/saturn/rhea/scene.glb'
+            scale={PLANET_DATA['Rhea'].scale}
+            name='Rhea'
+            orbitingBodyName='Saturn'
+            horizonData={horizonData.data['Rhea']}
+            onClick={(pos, scale) => handlePlanetClick('Rhea', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Saturn']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/saturn/iapetus/scene.glb'
+            scale={PLANET_DATA['Iapetus'].scale}
+            name='Iapetus'
+            orbitingBodyName='Saturn'
+            horizonData={horizonData.data['Iapetus']}
+            onClick={(pos, scale) => handlePlanetClick('Iapetus', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Saturn']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/saturn/dione/scene.glb'
+            scale={PLANET_DATA['Dione'].scale}
+            name='Dione'
+            orbitingBodyName='Saturn'
+            horizonData={horizonData.data['Dione']}
+            onClick={(pos, scale) => handlePlanetClick('Dione', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Saturn']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/saturn/tethys/scene.glb'
+            scale={PLANET_DATA['Tethys'].scale}
+            name='Tethys'
+            orbitingBodyName='Saturn'
+            horizonData={horizonData.data['Tethys']}
+            onClick={(pos, scale) => handlePlanetClick('Tethys', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Saturn']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/saturn/enceladus/scene.glb'
+            scale={PLANET_DATA['Enceladus'].scale}
+            name='Enceladus'
+            orbitingBodyName='Saturn'
+            horizonData={horizonData.data['Enceladus']}
+            onClick={(pos, scale) => handlePlanetClick('Enceladus', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Saturn']}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/saturn/mimas/scene.glb'
+            scale={PLANET_DATA['Mimas'].scale}
+            name='Mimas'
+            orbitingBodyName='Saturn'
+            horizonData={horizonData.data['Mimas']}
+            onClick={(pos, scale) => handlePlanetClick('Mimas', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Saturn']}
           />
 
           {/* Uranus */}
