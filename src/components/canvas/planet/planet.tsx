@@ -86,6 +86,7 @@ export function Planet(props: PlanetProps) {
   });
 
   const handlePointerEnter = () => {
+    if (!isClickable) return;
     playHover({ playbackRate: 0.7 + Math.random() * (1.1 - 0.7) });
     document.body.style.cursor = 'pointer';
     circleMaterialRef.current.color = new Color(hoverColor);
