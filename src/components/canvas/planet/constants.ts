@@ -263,6 +263,67 @@ export const PLANET_DATA = {
     color: '#68ccda',
     hoverColor: '#4e99a3'
   },
+  Miranda: {
+    semiMajorAxis: 0.001276, // AU
+    semiMinorAxis: 0.001276, // Calculated value
+    eccentricity: 0.0013,    // Actual value
+    inclination: 4.338 * (Math.PI / 180),   // Converted from degrees to radians
+    longitudeOfAscendingNode: 0 * (Math.PI / 180),
+    argumentOfPeriapsis: 0 * (Math.PI / 180),
+    scale: 0.037, // Updated scale relative to Earth's size
+    offset: 0.0000016588, // 0.0013 * 0.001276
+    color: '#cccccc',
+    hoverColor: '#6699cc'
+  },
+  Ariel: {
+    semiMajorAxis: 0.001914, // AU
+    semiMinorAxis: 0.001914, // Calculated value
+    eccentricity: 0.0012,    // Actual value
+    inclination: 0.260 * (Math.PI / 180),   // Converted from degrees to radians
+    longitudeOfAscendingNode: 0 * (Math.PI / 180),
+    argumentOfPeriapsis: 0 * (Math.PI / 180),
+    scale: 0.091, // Updated scale relative to Earth's size
+    offset: 0.0000022968, // 0.0012 * 0.001914
+    color: '#cccccc',
+    hoverColor: '#6699cc'
+  },
+  Umbriel: {
+    semiMajorAxis: 0.002665, // AU
+    semiMinorAxis: 0.002665, // Calculated value
+    eccentricity: 0.0039,    // Actual value
+    inclination: 0.128 * (Math.PI / 180),   // Converted from degrees to radians
+    longitudeOfAscendingNode: 0 * (Math.PI / 180),
+    argumentOfPeriapsis: 0 * (Math.PI / 180),
+    scale: 0.092, // Updated scale relative to Earth's size
+    offset: 0.0000103935, // 0.0039 * 0.002665
+    color: '#cccccc',
+    hoverColor: '#6699cc'
+  },
+  Titania: {
+    semiMajorAxis: 0.004366, // AU
+    semiMinorAxis: 0.004366, // Calculated value
+    eccentricity: 0.0011,    // Actual value
+    inclination: 0.079 * (Math.PI / 180),   // Converted from degrees to radians
+    longitudeOfAscendingNode: 0 * (Math.PI / 180),
+    argumentOfPeriapsis: 0 * (Math.PI / 180),
+    scale: 0.124, // Updated scale relative to Earth's size
+    offset: 0.0000048026, // 0.0011 * 0.004366
+    color: '#cccccc',
+    hoverColor: '#6699cc'
+  },
+  Oberon: {
+    semiMajorAxis: 0.005835, // AU
+    semiMinorAxis: 0.005835, // Calculated value
+    eccentricity: 0.0014,    // Actual value
+    inclination: 0.068 * (Math.PI / 180),   // Converted from degrees to radians
+    longitudeOfAscendingNode: 0 * (Math.PI / 180),
+    argumentOfPeriapsis: 0 * (Math.PI / 180),
+    scale: 0.119, // Updated scale relative to Earth's size
+    offset: 0.000008169, // 0.0014 * 0.005835
+    color: '#cccccc',
+    hoverColor: '#6699cc'
+  },
+
   Neptune: {
     semiMajorAxis: 30.110386,    // AU
     semiMinorAxis: 30.109458,    // Calculated value
@@ -274,5 +335,18 @@ export const PLANET_DATA = {
     offset: 0.2608, // 0.00867760 * 30.110386
     color: '#708ce3',
     hoverColor: '#5469AF'
+  },
+
+  Triton: {
+    semiMajorAxis: 0.002371, // AU
+    semiMinorAxis: 0.002371, // Calculated value
+    eccentricity: 0.000016,  // Actual value
+    inclination: 157.37 * (Math.PI / 180), // Converted from degrees to radians
+    longitudeOfAscendingNode: 0 * (Math.PI / 180),
+    argumentOfPeriapsis: 0 * (Math.PI / 180),
+    scale: 0.212, // Updated scale relative to Earth's size
+    offset: 0.000000037936, // 0.000016 * 0.002371
+    color: '#cccccc',
+    hoverColor: '#6699cc'
   },
 };
