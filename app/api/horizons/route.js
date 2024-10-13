@@ -94,7 +94,7 @@ export async function GET(req) {
 
         if (startIndex === -1 || endIndex === -1) {
           const errorMessage = 'No data found between $$SOE and $$EOE markers.';
-          console.error(`Error for ${name}: ${errorMessage}`);
+          console.error(`Error for ${name}: ${errorMessage}\n`, rawData);
           return { name, error: errorMessage };
         }
 
