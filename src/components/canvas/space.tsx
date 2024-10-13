@@ -285,6 +285,52 @@ export function Space(props: SpaceProps) {
             onClick={(pos) => handlePlanetClick('Uranus', pos, PLANET_DATA['Uranus'].scale)}
           />
 
+          <SatelliteAndOrbit
+            modelUrl='/planets/uranus/miranda/scene.glb'
+            scale={PLANET_DATA['Miranda'].scale}
+            name='Miranda'
+            orbitingBodyName='Uranus'
+            horizonData={horizonData.data['Miranda']}
+            onClick={(pos, scale) => handlePlanetClick('Miranda', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Uranus']}
+          />
+          <SatelliteAndOrbit
+            modelUrl='/planets/uranus/ariel/scene.glb'
+            scale={PLANET_DATA['Ariel'].scale}
+            name='Ariel'
+            orbitingBodyName='Uranus'
+            horizonData={horizonData.data['Ariel']}
+            onClick={(pos, scale) => handlePlanetClick('Ariel', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Uranus']}
+          />
+          <SatelliteAndOrbit
+            modelUrl='/planets/uranus/umbriel/scene.glb'
+            scale={PLANET_DATA['Umbriel'].scale}
+            name='Umbriel'
+            orbitingBodyName='Uranus'
+            horizonData={horizonData.data['Umbriel']}
+            onClick={(pos, scale) => handlePlanetClick('Umbriel', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Uranus']}
+          />
+          <SatelliteAndOrbit
+            modelUrl='/planets/uranus/titania/scene.glb'
+            scale={PLANET_DATA['Titania'].scale}
+            name='Titania'
+            orbitingBodyName='Uranus'
+            horizonData={horizonData.data['Titania']}
+            onClick={(pos, scale) => handlePlanetClick('Titania', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Uranus']}
+          />
+          <SatelliteAndOrbit
+            modelUrl='/planets/uranus/oberon/scene.glb'
+            scale={PLANET_DATA['Oberon'].scale}
+            name='Oberon'
+            orbitingBodyName='Uranus'
+            horizonData={horizonData.data['Oberon']}
+            onClick={(pos, scale) => handlePlanetClick('Oberon', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Uranus']}
+          />
+
           {/* Neptune */}
           <PlanetAndOrbit
             modelUrl='/planets/neptune/scene.glb'
@@ -292,6 +338,16 @@ export function Space(props: SpaceProps) {
             name='Neptune'
             horizonData={horizonData.data['Neptune']}
             onClick={(pos) => handlePlanetClick('Neptune', pos, PLANET_DATA['Neptune'].scale)}
+          />
+
+          <SatelliteAndOrbit
+            modelUrl='/planets/neptune/triton/scene.glb'
+            scale={PLANET_DATA['Triton'].scale}
+            name='Triton'
+            orbitingBodyName='Neptune'
+            horizonData={horizonData.data['Triton']}
+            onClick={(pos, scale) => handlePlanetClick('Triton', pos, scale)}
+            orbitingPlanetHorizonData={horizonData.data['Neptune']}
           />
         </group>
         {/* <EffectComposer>
