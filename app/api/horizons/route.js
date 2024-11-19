@@ -27,24 +27,40 @@ export async function GET(req) {
     { name: 'Mimas', command: '601', center: '699' }, // Mimas orbits Saturn
   ];
 
-  const today = new Date();
-  const yyyy = today.getUTCFullYear();
-  const mm = String(today.getUTCMonth() + 1).padStart(2, '0');
-  const dd = String(today.getUTCDate()).padStart(2, '0');
-  const hh = String(today.getUTCHours()).padStart(2, '0');
-  const min = String(today.getUTCMinutes()).padStart(2, '0');
-  const ss = String(today.getUTCSeconds()).padStart(2, '0');
-  const dateString = `${yyyy}-${mm}-${dd}`;
-  const startTime = `${dateString} ${hh}:${min}:${ss}`;
+  function getCurrentTime() {
+    const today = new Date();
+    const yyyy = today.getUTCFullYear();
+    const mm = String(today.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(today.getUTCDate()).padStart(2, '0');
+    const hh = String(today.getUTCHours()).padStart(2, '0');
+    const min = String(today.getUTCMinutes()).padStart(2, '0');
+    const ss = String(today.getUTCSeconds()).padStart(2, '0');
+    const dateString = `${yyyy}-${mm}-${dd}`;
+    const timeString = `${dateString} ${hh}:${min}:${ss}`;
+    return timeString;
+  }
 
-  const stopTimeDate = new Date(today.getTime() + 60 * 60 * 1000); // Add one hour
-  const stopHh = String(stopTimeDate.getUTCHours()).padStart(2, '0');
-  const stopMin = String(stopTimeDate.getUTCMinutes()).padStart(2, '0');
-  const stopSs = String(stopTimeDate.getUTCSeconds()).padStart(2, '0');
-  const stopTime = `${dateString} ${stopHh}:${stopMin}:${stopSs}`;
+  let startTime = getCurrentTime();
+  let stopTimeDate = new Date(new Date().getTime() + 60 * 60 * 1000); // Add one hour
+  let stopHh = String(stopTimeDate.getUTCHours()).padStart(2, '0');
+  let stopMin = String(stopTimeDate.getUTCMinutes()).padStart(2, '0');
+  let stopSs = String(stopTimeDate.getUTCSeconds()).padStart(2, '0');
+  let stopTime = `${startTime.split(' ')[0]} ${stopHh}:${stopMin}:${stopSs}`;
 
-  console.log('Start Time: ', startTime);
-  console.log('Stop Time: ', stopTime);
+  function updateTimes() {
+    startTime = getCurrentTime();
+    stopTimeDate = new Date(new Date().getTime() + 60 * 60 * 1000); // Add one hour
+    stopHh = String(stopTimeDate.getUTCHours()).padStart(2, '0');
+    stopMin = String(stopTimeDate.getUTCMinutes()).padStart(2, '0');
+    stopSs = String(stopTimeDate.getUTCSeconds()).padStart(2, '0');
+    stopTime = `${startTime.split(' ')[0]} ${stopHh}:${stopMin}:${stopSs}`;
+
+    console.log('Start Time: ', startTime);
+    console.log('Stop Time: ', stopTime);
+  }
+
+  // Update the time every 10 seconds
+  setInterval(updateTimes, 10000);
 
   function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
