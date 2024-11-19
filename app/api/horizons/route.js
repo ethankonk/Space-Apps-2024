@@ -25,6 +25,13 @@ export async function GET(req) {
     { name: 'Tethys', command: '603', center: '699' }, // Tethys orbits Saturn
     { name: 'Enceladus', command: '602', center: '699' }, // Enceladus orbits Saturn
     { name: 'Mimas', command: '601', center: '699' }, // Mimas orbits Saturn
+    { name: 'Miranda', command: '715', center: '799' }, // Miranda orbits Uranus
+    { name: 'Ariel', command: '716', center: '799' }, // Ariel orbits Uranus
+    { name: 'Umbriel', command: '717', center: '799' }, // Umbriel orbits Uranus
+    { name: 'Titania', command: '718', center: '799' }, // Titania orbits Uranus
+    { name: 'Oberon', command: '719', center: '799' }, // Oberon orbits Uranus
+    { name: 'Triton', command: '801', center: '899' }, // Triton orbits Neptune
+    // { name: 'Proteus', command: '802', center: '899' }, // Proteus orbits Neptune
   ];
 
   function getCurrentTime() {
@@ -110,7 +117,7 @@ export async function GET(req) {
 
         if (startIndex === -1 || endIndex === -1) {
           const errorMessage = 'No data found between $$SOE and $$EOE markers.';
-          console.error(`Error for ${name}: ${errorMessage}`);
+          console.error(`Error for ${name}: ${errorMessage}\n`, rawData);
           return { name, error: errorMessage };
         }
 
