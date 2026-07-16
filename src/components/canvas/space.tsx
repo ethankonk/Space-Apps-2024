@@ -78,7 +78,14 @@ export function Space(props: SpaceProps) {
             name='Sun'
             onClick={(pos) => handlePlanetClick('Sun', pos, 1)}
           />
-          <pointLight position={[0, 0, 0]} intensity={5} distance={0} decay={0} castShadow={true} />
+          <pointLight
+            position={[0, 0, 0]}
+            intensity={5}
+            distance={0}
+            decay={0}
+            color='#fff2d6'
+            castShadow={true}
+          />
 
           {/* Mercury */}
           <group>
@@ -350,14 +357,16 @@ export function Space(props: SpaceProps) {
             orbitingPlanetHorizonData={horizonData.data['Neptune']}
           />
         </group>
-        {/* <EffectComposer>
+        <EffectComposer>
           <Bloom
-            intensity={2.0} // The bloom intensity.
-            luminanceThreshold={0} // luminance threshold. Raise this value to mask out darker elements in the scene.
-            luminanceSmoothing={1} // smoothness of the luminance threshold. Range is [0, 1]
+            intensity={1.5} // The bloom intensity (complements the sun's glow sprite).
+            luminanceThreshold={0.9} // Only pixels brighter than this bloom — i.e. essentially just the emissive sun.
+            luminanceSmoothing={0.9} // smoothness of the luminance threshold. Range is [0, 1]
+            mipmapBlur
+            radius={0.9} // How far the glow spreads from the sun.
             kernelSize={KernelSize.HUGE}
           />
-        </EffectComposer> */}
+        </EffectComposer>
       </group>
     ),
   );

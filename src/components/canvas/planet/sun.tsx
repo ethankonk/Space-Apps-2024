@@ -1,9 +1,8 @@
 import { Billboard, Text } from '@react-three/drei';
 import { ObjectMap, useFrame } from '@react-three/fiber';
-import { Color, Vector3 } from 'three';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { MathUtils } from 'three';
+import { Color, MathUtils, Vector3 } from 'three';
 import { GLTF } from 'three-stdlib';
 import useSound from 'use-sound';
 import hover from '../../../sounds/hover-1.mp3';
@@ -38,6 +37,62 @@ export function Sun(props: SunProps) {
 
   const origin = new THREE.Vector3(0, 0, 0);
   const planetFromOrigin = position.distanceTo(origin);
+
+  // Make the sun's material glow "brighter than white" so the Bloom pass in
+  // <Space> picks it out (and only it). toneMapped=false lets the emissive value
+  // exceed 1.0, which is what the bloom luminance threshold keys off of.
+  useMemo(() => {
+    model?.scene.traverse((child) => {
+      const mesh = child as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      materials.forEach((mat) => {
+        const m = mat as THREE.MeshStandardMaterial;
+        m.emissive = new Color('#ffca61');
+        m.emissiveIntensity = 6;
+        m.toneMapped = false;
+        m.needsUpdate = true;
+      });
+    });
+  }, [model]);
+
+  // How far the glow halo extends, as a multiple of the sun's radius. Bump this
+  // for a bigger halo; drop it for a tighter one.
+  const GLOW_SIZE = 10;
+
+  // A soft radial-gradient sprite that sits over the sun and always faces the
+  // camera, giving a real glow/corona independent of any postprocessing. The
+  // gradient is drawn to a canvas so there's no image asset to ship, and the
+  // sprite uses additive blending so it reads as emitted light.
+  const glow = useMemo(() => {
+    if (typeof document === 'undefined' || !model) return null;
+
+    const res = 256;
+    const canvas = document.createElement('canvas');
+    canvas.width = res;
+    canvas.height = res;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    const gradient = ctx.createRadialGradient(res / 2, res / 2, 0, res / 2, res / 2, res / 2);
+    gradient.addColorStop(0.0, 'rgba(0, 0, 0, 0)'); // hot white-gold core
+    gradient.addColorStop(0.05, 'rgba(255, 245, 214, 1)'); // hot white-gold core
+    gradient.addColorStop(0.18, 'rgba(255, 202, 97, 0.85)');
+    gradient.addColorStop(0.45, 'rgba(255, 150, 46, 0.3)');
+    gradient.addColorStop(1.0, 'rgba(255, 120, 20, 0)'); // fades fully to transparent
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, res, res);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+
+    // Size the halo off the sun model's actual bounding radius so it scales with
+    // whatever model/scale is used.
+    const boundingSphere = new THREE.Box3().setFromObject(model.scene).getBoundingSphere(new THREE.Sphere());
+    const radius = boundingSphere.radius * (scale ?? 1);
+
+    return { texture, radius };
+  }, [model, scale]);
 
   useFrame((state, delta) => {
     const hoverEffectSpeed = 15 * delta;
@@ -104,6 +159,18 @@ export function Sun(props: SunProps) {
         scale={[1 * scale, 1 * scale, 1 * scale]}
         position={modelPosition}
       />
+
+      {glow && (
+        <sprite scale={[glow.radius * GLOW_SIZE, glow.radius * GLOW_SIZE, 1]} renderOrder={-1}>
+          <spriteMaterial
+            map={glow.texture}
+            transparent
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+            toneMapped={false}
+          />
+        </sprite>
+      )}
 
       <Billboard>
         <Text
