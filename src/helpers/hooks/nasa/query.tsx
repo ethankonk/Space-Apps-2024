@@ -9,7 +9,10 @@ export function useHorizonsRouteQuery(options: QueryOptions): Loadable<HorizonsR
     queryFn: async () => getHorizonsRoute(),
     ...options,
     enabled: options.enabled,
-    staleTime: 1000 * 60 * 5,
+    // Poll the server every ~10s so positions stay live. The server serves a
+    // stale-while-revalidate cache, so this only hits JPL at most once per TTL.
+    staleTime: 1000 * 10,
+    refetchInterval: 1000 * 10,
     refetchOnWindowFocus: false,
   });
 

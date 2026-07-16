@@ -17,4 +17,5 @@ export interface HorizonsResponse {
     [planetName: string]: PlanetDataEntry[];
   };
   errors?: { planet: string; error: string }[];
+  fetchedAt?: number;
 }
