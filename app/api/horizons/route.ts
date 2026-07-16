@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import pLimit from 'p-limit';
+import { mergePositions } from './merge';
 
 // This route must never be statically cached at build/deploy time, otherwise it
 // freezes every body at the deploy-time position. Force it to run per-request.
@@ -11,43 +12,73 @@ export const revalidate = 0;
 // on Vercel so it can finish and populate the cache instead of timing out.
 export const maxDuration = 60;
 
-// How long a set of positions is considered fresh before we pull from JPL again.
-// Positions move imperceptibly over this window (step size is 1 day), and JPL
-// Horizons rate-limits aggressively, so refreshing more often buys nothing.
+// How long a fully-successful set of positions is considered fresh before we
+// pull from JPL again. Positions move imperceptibly over this window (step size
+// is 1 day), and JPL Horizons rate-limits aggressively, so refreshing more often
+// buys nothing.
 const CACHE_TTL_MS = 5 * 60 * 1000;
+
+// When the last refresh came back degraded (some bodies failed), retry on this
+// shorter interval so the missing bodies get refreshed soon — but not so often
+// that we hammer JPL while it's struggling.
+const RETRY_TTL_MS = 30 * 1000;
 
 // Module-scoped stale-while-revalidate cache. On a warm serverless instance this
 // is shared across requests; on a cold start it's simply rebuilt once. Clients
 // poll every ~10s and are served this cache instantly, so NASA is only hit at
 // most once per TTL per warm instance rather than once per client request.
-let cache: { data: any; fetchedAt: number } | null = null;
-let inFlight: Promise<{ data: any; fetchedAt: number }> | null = null;
+let cache: { data: any; fetchedAt: number; hadErrors: boolean } | null = null;
+let inFlight: Promise<typeof cache> | null = null;
 
 async function refreshPositions() {
-  const data = await fetchAllPositions();
-  cache = { data, fetchedAt: Date.now() };
+  const fresh = await fetchAllPositions();
+
+  // Merge new positions over the last known good ones so a body that failed this
+  // round keeps its previous position instead of being wiped.
+  const merged = mergePositions(cache?.data ?? null, fresh);
+
+  cache = {
+    data: merged,
+    fetchedAt: Date.now(),
+    hadErrors: (fresh.errors?.length ?? 0) > 0,
+  };
   return cache;
+}
+
+function startRefresh() {
+  if (inFlight) return inFlight;
+  inFlight = refreshPositions()
+    .catch((err) => {
+      // A hard failure (not just some bodies erroring) must never wipe the cache
+      // or reject an un-awaited background promise. Keep what we have and let the
+      // next request retry.
+      console.error('Position refresh failed; keeping previous cache:', err);
+      return cache;
+    })
+    .finally(() => {
+      inFlight = null;
+    });
+  return inFlight;
 }
 
 async function getPositions() {
   if (!cache) {
     // Cold: no data yet, so we must block on a single shared fetch.
-    if (!inFlight) {
-      inFlight = refreshPositions().finally(() => {
-        inFlight = null;
-      });
+    const result = await startRefresh();
+    if (!result) {
+      throw new Error('Unable to fetch positions from JPL Horizons.');
     }
-    return inFlight;
+    return result;
   }
 
-  const isStale = Date.now() - cache.fetchedAt > CACHE_TTL_MS;
-  if (isStale && !inFlight) {
+  // Refresh sooner when the last pull was degraded, so missing bodies recover
+  // quickly; otherwise use the normal fresh window.
+  const ttl = cache.hadErrors ? RETRY_TTL_MS : CACHE_TTL_MS;
+  if (Date.now() - cache.fetchedAt > ttl) {
     // Stale-while-revalidate: kick off a refresh but don't await it. Serve the
-    // current (slightly stale) cache immediately. If the background refresh gets
-    // frozen before completing, the next request simply retries.
-    inFlight = refreshPositions().finally(() => {
-      inFlight = null;
-    });
+    // current cache immediately. If the background refresh gets frozen before
+    // completing, the next request simply retries.
+    startRefresh();
   }
 
   return cache;
