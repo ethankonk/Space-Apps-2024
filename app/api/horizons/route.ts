@@ -1,7 +1,59 @@
 import { NextResponse } from 'next/server';
 import pLimit from 'p-limit';
 
-export async function GET(req) {
+// This route must never be statically cached at build/deploy time, otherwise it
+// freezes every body at the deploy-time position. Force it to run per-request.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+// A cold refresh fetches all 28 bodies from JPL, which is slow and must stay
+// under a JPL-friendly concurrency. Give the (rare) cold request enough headroom
+// on Vercel so it can finish and populate the cache instead of timing out.
+export const maxDuration = 60;
+
+// How long a set of positions is considered fresh before we pull from JPL again.
+// Positions move imperceptibly over this window (step size is 1 day), and JPL
+// Horizons rate-limits aggressively, so refreshing more often buys nothing.
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
+// Module-scoped stale-while-revalidate cache. On a warm serverless instance this
+// is shared across requests; on a cold start it's simply rebuilt once. Clients
+// poll every ~10s and are served this cache instantly, so NASA is only hit at
+// most once per TTL per warm instance rather than once per client request.
+let cache: { data: any; fetchedAt: number } | null = null;
+let inFlight: Promise<{ data: any; fetchedAt: number }> | null = null;
+
+async function refreshPositions() {
+  const data = await fetchAllPositions();
+  cache = { data, fetchedAt: Date.now() };
+  return cache;
+}
+
+async function getPositions() {
+  if (!cache) {
+    // Cold: no data yet, so we must block on a single shared fetch.
+    if (!inFlight) {
+      inFlight = refreshPositions().finally(() => {
+        inFlight = null;
+      });
+    }
+    return inFlight;
+  }
+
+  const isStale = Date.now() - cache.fetchedAt > CACHE_TTL_MS;
+  if (isStale && !inFlight) {
+    // Stale-while-revalidate: kick off a refresh but don't await it. Serve the
+    // current (slightly stale) cache immediately. If the background refresh gets
+    // frozen before completing, the next request simply retries.
+    inFlight = refreshPositions().finally(() => {
+      inFlight = null;
+    });
+  }
+
+  return cache;
+}
+
+async function fetchAllPositions() {
   const planetCommands = [
     { name: 'Mercury', command: '199', center: '10' },
     { name: 'Venus', command: '299', center: '10' },
@@ -47,40 +99,25 @@ export async function GET(req) {
     return timeString;
   }
 
-  let startTime = getCurrentTime();
-  let stopTimeDate = new Date(new Date().getTime() + 60 * 60 * 1000); // Add one hour
-  let stopHh = String(stopTimeDate.getUTCHours()).padStart(2, '0');
-  let stopMin = String(stopTimeDate.getUTCMinutes()).padStart(2, '0');
-  let stopSs = String(stopTimeDate.getUTCSeconds()).padStart(2, '0');
-  let stopTime = `${startTime.split(' ')[0]} ${stopHh}:${stopMin}:${stopSs}`;
-
-  function updateTimes() {
-    startTime = getCurrentTime();
-    stopTimeDate = new Date(new Date().getTime() + 60 * 60 * 1000); // Add one hour
-    stopHh = String(stopTimeDate.getUTCHours()).padStart(2, '0');
-    stopMin = String(stopTimeDate.getUTCMinutes()).padStart(2, '0');
-    stopSs = String(stopTimeDate.getUTCSeconds()).padStart(2, '0');
-    stopTime = `${startTime.split(' ')[0]} ${stopHh}:${stopMin}:${stopSs}`;
-
-    console.log('Start Time: ', startTime);
-    console.log('Stop Time: ', stopTime);
-  }
-
-  // Update the time every 10 seconds
-  setInterval(updateTimes, 10000);
+  // Computed fresh on every refresh, so positions always reflect "now".
+  const startTime = getCurrentTime();
+  const stopTimeDate = new Date(new Date().getTime() + 60 * 60 * 1000); // Add one hour
+  const stopHh = String(stopTimeDate.getUTCHours()).padStart(2, '0');
+  const stopMin = String(stopTimeDate.getUTCMinutes()).padStart(2, '0');
+  const stopSs = String(stopTimeDate.getUTCSeconds()).padStart(2, '0');
+  const stopTime = `${startTime.split(' ')[0]} ${stopHh}:${stopMin}:${stopSs}`;
 
   function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  try {
-    const limit = pLimit(2);
+  // JPL's server returns 500s if hit too hard, so keep concurrency low. 3 is a
+  // safe step up from the original 2, and the retry below absorbs the occasional
+  // transient JPL error instead of silently dropping that body.
+  const limit = pLimit(3);
 
-    const fetchPromises = planetCommands.map(({ name, command, center }, index) => {
+  const fetchPromises = planetCommands.map(({ name, command, center }) => {
       return limit(async () => {
-        // we add delay between requests
-        await delay(index * 100);
-
         const params = {
           format: 'text',
           COMMAND: `'${command}'`,
@@ -100,87 +137,110 @@ export async function GET(req) {
 
         const url = `https://ssd.jpl.nasa.gov/api/horizons.api?${queryString}`;
 
-        const apiRes = await fetch(url);
+        // JPL intermittently 500s under load. Retry a few times with backoff so a
+        // transient failure doesn't permanently drop this body from the cache.
+        const MAX_ATTEMPTS = 3;
+        let lastError = 'Unknown error';
 
-        if (!apiRes.ok) {
-          const errorDetails = await apiRes.text();
-          console.error(`Horizons API returned status ${apiRes.status} for ${name}:`, errorDetails);
-          return { planetName, error: errorDetails };
-        }
+        for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+          try {
+            // no-store so Next's fetch cache doesn't re-freeze JPL responses.
+            const apiRes = await fetch(url, { cache: 'no-store' });
 
-        const rawData = await apiRes.text();
-
-        // Parse the response to extract data
-        const resultLines = rawData.split('\n');
-        const startIndex = resultLines.indexOf('$$SOE');
-        const endIndex = resultLines.indexOf('$$EOE');
-
-        if (startIndex === -1 || endIndex === -1) {
-          const errorMessage = 'No data found between $$SOE and $$EOE markers.';
-          console.error(`Error for ${name}: ${errorMessage}\n`, rawData);
-          return { name, error: errorMessage };
-        }
-
-        // Extract and format the data lines
-        const dataLines = resultLines.slice(startIndex + 1, endIndex);
-
-        const parsedData = [];
-        let i = 0;
-
-        while (i < dataLines.length) {
-          const line1 = dataLines[i].trim();
-          const line2 = dataLines[i + 1]?.trim();
-          const line3 = dataLines[i + 2]?.trim();
-
-          const jdMatch = line1.match(/^(\d+\.\d+)\s+=\s+(.+)/);
-          if (jdMatch) {
-            const time = jdMatch[1];
-            const datetime = jdMatch[2];
-
-            const xyzMatch = line2.match(/X\s*=\s*([\dE+-.]+)\s+Y\s*=\s*([\dE+-.]+)\s+Z\s*=\s*([\dE+-.]+)/);
-            const vxvyvzMatch = line3.match(/VX\s*=\s*([\dE+-.]+)\s+VY\s*=\s*([\dE+-.]+)\s+VZ\s*=\s*([\dE+-.]+)/);
-
-            if (xyzMatch && vxvyvzMatch) {
-              const x = parseFloat(xyzMatch[1]);
-              const y = parseFloat(xyzMatch[2]);
-              const z = parseFloat(xyzMatch[3]);
-
-              const vx = parseFloat(vxvyvzMatch[1]);
-              const vy = parseFloat(vxvyvzMatch[2]);
-              const vz = parseFloat(vxvyvzMatch[3]);
-
-              parsedData.push({ time, datetime, x, y, z, vx, vy, vz });
+            if (!apiRes.ok) {
+              throw new Error(`Horizons API returned status ${apiRes.status}`);
             }
 
-            i += 4;
-          } else {
-            i++;
+            const rawData = await apiRes.text();
+
+            // Parse the response to extract data
+            const resultLines = rawData.split('\n');
+            const startIndex = resultLines.indexOf('$$SOE');
+            const endIndex = resultLines.indexOf('$$EOE');
+
+            if (startIndex === -1 || endIndex === -1) {
+              throw new Error('No data found between $$SOE and $$EOE markers.');
+            }
+
+            // Extract and format the data lines
+            const dataLines = resultLines.slice(startIndex + 1, endIndex);
+
+            const parsedData = [];
+            let i = 0;
+
+            while (i < dataLines.length) {
+              const line1 = dataLines[i].trim();
+              const line2 = dataLines[i + 1]?.trim();
+              const line3 = dataLines[i + 2]?.trim();
+
+              const jdMatch = line1.match(/^(\d+\.\d+)\s+=\s+(.+)/);
+              if (jdMatch) {
+                const time = jdMatch[1];
+                const datetime = jdMatch[2];
+
+                const xyzMatch = line2.match(/X\s*=\s*([\dE+-.]+)\s+Y\s*=\s*([\dE+-.]+)\s+Z\s*=\s*([\dE+-.]+)/);
+                const vxvyvzMatch = line3.match(/VX\s*=\s*([\dE+-.]+)\s+VY\s*=\s*([\dE+-.]+)\s+VZ\s*=\s*([\dE+-.]+)/);
+
+                if (xyzMatch && vxvyvzMatch) {
+                  const x = parseFloat(xyzMatch[1]);
+                  const y = parseFloat(xyzMatch[2]);
+                  const z = parseFloat(xyzMatch[3]);
+
+                  const vx = parseFloat(vxvyvzMatch[1]);
+                  const vy = parseFloat(vxvyvzMatch[2]);
+                  const vz = parseFloat(vxvyvzMatch[3]);
+
+                  parsedData.push({ time, datetime, x, y, z, vx, vy, vz });
+                }
+
+                i += 4;
+              } else {
+                i++;
+              }
+            }
+
+            return { name, data: parsedData };
+          } catch (err) {
+            lastError = err instanceof Error ? err.message : String(err);
+            console.error(`Attempt ${attempt}/${MAX_ATTEMPTS} failed for ${name}: ${lastError}`);
+            // Back off before retrying, but not after the final attempt.
+            if (attempt < MAX_ATTEMPTS) {
+              await delay(attempt * 750);
+            }
           }
         }
 
-        return { name, data: parsedData };
+        return { name, error: lastError };
       });
     });
 
     const results = await Promise.all(fetchPromises);
 
-    const dataByPlanet = {};
-    const errors = [];
+  const dataByPlanet = {};
+  const errors = [];
 
-    results.forEach((result) => {
-      if (result.error) {
-        errors.push({ planet: result.name, error: result.error });
-      } else {
-        dataByPlanet[result.name] = result.data;
-      }
-    });
+  results.forEach((result) => {
+    if (result.error) {
+      errors.push({ planet: result.name, error: result.error });
+    } else {
+      dataByPlanet[result.name] = result.data;
+    }
+  });
 
-    const responseData = {
-      data: dataByPlanet,
-      ...(errors.length > 0 && { errors }),
-    };
+  return {
+    data: dataByPlanet,
+    ...(errors.length > 0 && { errors }),
+  };
+}
 
-    return NextResponse.json(responseData);
+export async function GET() {
+  try {
+    const { data, fetchedAt } = await getPositions();
+    // fetchedAt lets the client see how fresh the served positions are.
+    return NextResponse.json(
+      { ...data, fetchedAt },
+      { headers: { 'Cache-Control': 'no-store' } },
+    );
   } catch (error) {
     console.error('Error fetching data from Horizons API:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
